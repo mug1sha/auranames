@@ -25,45 +25,48 @@ export function Results({ names, onRegenerate, isLoading }: ResultsProps) {
   if (names.length === 0) return null
 
   return (
-    <section className="relative py-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-24">
+      {/* Background decoration */}
+      <div className="absolute inset-0 gold-dots opacity-15" />
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-center mb-12"
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center mb-14"
         >
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4 text-balance" style={{ letterSpacing: "-1px" }}>
-            Your Generated <span className="gradient-text">Names</span>
+          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-5 text-balance font-[family-name:var(--font-playfair)]">
+            Your Curated <span className="gradient-text">Names</span>
           </h2>
-          <p className="text-muted-foreground text-lg font-medium">
-            Click on any name to copy it to your clipboard
+          <p className="text-muted-foreground text-lg">
+            Select any name to copy it to your clipboard
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
           <AnimatePresence mode="wait">
             {names.map((name, index) => (
               <motion.div
                 key={`${name}-${index}`}
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                initial={{ opacity: 0, y: 15, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                exit={{ opacity: 0, y: -15, scale: 0.96 }}
                 transition={{ 
-                  duration: 0.4, 
+                  duration: 0.45, 
                   delay: index * 0.08,
                   ease: "easeOut"
                 }}
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.02 }}
                 onClick={() => copyToClipboard(name, index)}
-                className="group relative clay-card p-5 cursor-pointer"
+                className="group relative clay-card p-6 cursor-pointer"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/20 text-primary text-sm font-bold">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-gold/15 text-gold text-sm font-bold border border-gold/20">
                       {index + 1}
                     </span>
-                    <span className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-300">
+                    <span className="text-xl font-semibold text-foreground group-hover:text-gold transition-colors duration-300 font-[family-name:var(--font-playfair)]">
                       {name}
                     </span>
                   </div>
@@ -75,12 +78,12 @@ export function Results({ names, onRegenerate, isLoading }: ResultsProps) {
                     className="flex items-center gap-2"
                   >
                     {copiedIndex === index ? (
-                      <span className="text-accent text-sm font-semibold flex items-center gap-1">
+                      <span className="text-gold text-sm font-semibold flex items-center gap-2">
                         <CheckIcon />
                         Copied!
                       </span>
                     ) : (
-                      <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+                      <span className="text-muted-foreground group-hover:text-gold transition-colors duration-300">
                         <CopyIcon />
                       </span>
                     )}
@@ -94,16 +97,16 @@ export function Results({ names, onRegenerate, isLoading }: ResultsProps) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.4 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
           className="flex justify-center"
         >
           <motion.button
             onClick={onRegenerate}
             disabled={isLoading}
-            whileHover={{ scale: isLoading ? 1 : 1.02, y: isLoading ? 0 : -2 }}
+            whileHover={{ scale: isLoading ? 1 : 1.02, y: isLoading ? 0 : -3 }}
             whileTap={{ scale: isLoading ? 1 : 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="px-8 py-3 clay-surface-sm text-foreground font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            transition={{ duration: 0.25 }}
+            className="px-10 py-4 clay-button text-foreground font-semibold flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshIcon className={isLoading ? "animate-spin" : ""} />
             <span>Regenerate Names</span>
