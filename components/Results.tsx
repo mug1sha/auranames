@@ -28,15 +28,15 @@ export function Results({ names, onRegenerate, isLoading }: ResultsProps) {
     <section className="relative py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 text-balance">
-            Your Generated Names
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4 text-balance" style={{ letterSpacing: "-1px" }}>
+            Your Generated <span className="gradient-text">Names</span>
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg font-medium">
             Click on any name to copy it to your clipboard
           </p>
         </motion.div>
@@ -46,24 +46,24 @@ export function Results({ names, onRegenerate, isLoading }: ResultsProps) {
             {names.map((name, index) => (
               <motion.div
                 key={`${name}-${index}`}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ 
                   duration: 0.4, 
                   delay: index * 0.08,
                   ease: "easeOut"
                 }}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.03 }}
                 onClick={() => copyToClipboard(name, index)}
-                className="group relative glass rounded-2xl p-5 border border-border hover:border-primary/50 cursor-pointer transition-all glow-border hover:glow-purple"
+                className="group relative clay-card p-5 cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/20 text-primary text-sm font-bold">
+                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/20 text-primary text-sm font-bold">
                       {index + 1}
                     </span>
-                    <span className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                    <span className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-300">
                       {name}
                     </span>
                   </div>
@@ -75,12 +75,12 @@ export function Results({ names, onRegenerate, isLoading }: ResultsProps) {
                     className="flex items-center gap-2"
                   >
                     {copiedIndex === index ? (
-                      <span className="text-accent text-sm font-medium flex items-center gap-1">
+                      <span className="text-accent text-sm font-semibold flex items-center gap-1">
                         <CheckIcon />
                         Copied!
                       </span>
                     ) : (
-                      <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+                      <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">
                         <CopyIcon />
                       </span>
                     )}
@@ -94,15 +94,16 @@ export function Results({ names, onRegenerate, isLoading }: ResultsProps) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.6, duration: 0.4 }}
           className="flex justify-center"
         >
           <motion.button
             onClick={onRegenerate}
             disabled={isLoading}
-            whileHover={{ scale: isLoading ? 1 : 1.05 }}
-            whileTap={{ scale: isLoading ? 1 : 0.95 }}
-            className="px-8 py-3 rounded-xl glass border border-border text-foreground font-semibold hover:border-accent/50 hover:glow-cyan transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            whileHover={{ scale: isLoading ? 1 : 1.02, y: isLoading ? 0 : -2 }}
+            whileTap={{ scale: isLoading ? 1 : 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="px-8 py-3 clay-surface-sm text-foreground font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshIcon className={isLoading ? "animate-spin" : ""} />
             <span>Regenerate Names</span>
@@ -119,7 +120,7 @@ function CopyIcon() {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth={2}
+        strokeWidth={1.5}
         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
       />
     </svg>
@@ -140,7 +141,7 @@ function RefreshIcon({ className = "" }: { className?: string }) {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth={2}
+        strokeWidth={1.5}
         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
       />
     </svg>
