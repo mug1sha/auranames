@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({ 
@@ -8,11 +8,17 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  weight: ['400', '500', '600', '700'],
+})
+
 export const metadata: Metadata = {
-  title: 'AuraNames - AI-Powered Name Generator',
-  description: 'Generate powerful, meaningful names instantly with AI. Perfect for kids, pets, businesses, and products.',
+  title: 'AuraNames - Elegant AI Name Generator',
+  description: 'Generate elegant, meaningful names instantly with AI. Perfect for kids, pets, businesses, and products.',
   generator: 'v0.app',
-  keywords: ['AI', 'name generator', 'baby names', 'pet names', 'business names', 'brand names'],
+  keywords: ['AI', 'name generator', 'baby names', 'pet names', 'business names', 'brand names', 'elegant'],
   icons: {
     icon: [
       {
@@ -33,7 +39,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#05060A',
+  themeColor: '#0A192F',
   width: 'device-width',
   initialScale: 1,
 }
@@ -44,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} bg-background`}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} bg-background`}>
       <body className="font-sans antialiased min-h-screen bg-background">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
