@@ -15,10 +15,10 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'AuraNames - Elegant AI Name Generator',
-  description: 'Generate elegant, meaningful names instantly with AI. Perfect for kids, pets, businesses, and products.',
+  title: 'AuraNames - Prestige AI Name Generator',
+  description: 'Generate prestige, meaningful names instantly with AI. Perfect for kids, pets, businesses, and products.',
   generator: 'v0.app',
-  keywords: ['AI', 'name generator', 'baby names', 'pet names', 'business names', 'brand names', 'elegant'],
+  keywords: ['AI', 'name generator', 'baby names', 'pet names', 'business names', 'brand names', 'elegant', 'prestige'],
   icons: {
     icon: [
       {

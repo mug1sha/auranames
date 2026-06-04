@@ -1,17 +1,32 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { useState } from "react"
 
 export function Navbar() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
+  const [hidden, setHidden] = useState(false)
+  const { scrollY } = useScroll()
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0
+    if (latest > previous && latest > 150) {
+      setHidden(true)
+    } else {
+      setHidden(false)
+    }
+  })
 
   return (
     <motion.nav
+      variants={{
+        visible: { opacity: 1, y: 0 },
+        hidden: { opacity: 0, y: -100 },
+      }}
+      animate={hidden ? "hidden" : "visible"}
       initial={{ opacity: 0, y: -30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-auto"
     >
       {/* Outer ambient glow */}
@@ -57,7 +72,7 @@ export function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-bold text-foreground leading-none tracking-tight">
-                Aura<span className="gradient-text">Names</span>
+                <span className="gradient-text">Aura</span>Names
               </span>
               <span className="text-[10px] uppercase tracking-[0.25em] font-medium text-gold/60">AI Powered</span>
             </div>

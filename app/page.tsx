@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar"
 import { Hero } from "@/components/Hero"
 import { Generator } from "@/components/Generator"
 import { Results } from "@/components/Results"
+import Footer from "@/components/Footer"
 import { generateNames } from "@/lib/api"
 
 export default function Home() {
@@ -65,24 +66,3 @@ export default function Home() {
   )
 }
 
-function Footer() {
-  return (
-    <footer className="py-12 border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">A</span>
-            </div>
-            <span className="text-lg font-bold text-foreground">
-              Aura<span className="text-primary">Names</span>
-            </span>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} AuraNames. Powered by AI.
-          </p>
-        </div>
-      </div>
-    </footer>
-  )
-}
