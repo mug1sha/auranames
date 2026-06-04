@@ -39,6 +39,9 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
+  --color-clay-1: var(--clay-1);
+  --color-clay-2: var(--clay-2);
+  --color-clay-3: var(--clay-3);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -51,33 +54,37 @@
 :root {
   --background: #05060A;
   --foreground: #ffffff;
-  --card: rgba(255, 255, 255, 0.06);
+  --clay-1: #1A1C22;
+  --clay-2: #232632;
+  --clay-3: #2D3142;
+  --card: #1A1C22;
   --card-foreground: #ffffff;
-  --popover: rgba(255, 255, 255, 0.08);
+  --popover: #232632;
   --popover-foreground: #ffffff;
   --primary: #7C3AED;
   --primary-foreground: #ffffff;
-  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary: #232632;
   --secondary-foreground: #ffffff;
-  --muted: rgba(255, 255, 255, 0.06);
+  --muted: #1A1C22;
   --muted-foreground: rgba(255, 255, 255, 0.6);
   --accent: #22D3EE;
   --accent-foreground: #05060A;
   --destructive: #ef4444;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.10);
+  --input: #1A1C22;
   --ring: #7C3AED;
+  --highlight: rgba(255, 255, 255, 0.08);
   --chart-1: #7C3AED;
   --chart-2: #22D3EE;
   --chart-3: #A855F7;
   --chart-4: #06B6D4;
   --chart-5: #8B5CF6;
-  --radius: 1rem;
-  --sidebar: rgba(255, 255, 255, 0.04);
+  --radius: 1.25rem;
+  --sidebar: #1A1C22;
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #7C3AED;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(255, 255, 255, 0.08);
+  --sidebar-accent: #232632;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.1);
   --sidebar-ring: #7C3AED;
@@ -95,7 +102,68 @@
   }
 }
 
-/* Custom glow effects */
+/* Clay Surface Styles */
+.clay-surface {
+  background: linear-gradient(145deg, #232632, #1A1C22);
+  box-shadow:
+    10px 10px 25px rgba(0, 0, 0, 0.5),
+    -6px -6px 18px rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+}
+
+.clay-surface-sm {
+  background: linear-gradient(145deg, #232632, #1A1C22);
+  box-shadow:
+    6px 6px 15px rgba(0, 0, 0, 0.5),
+    -3px -3px 10px rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+}
+
+/* Clay Button */
+.clay-button {
+  background: linear-gradient(145deg, #2D3142, #1A1C22);
+  box-shadow:
+    6px 6px 15px rgba(0, 0, 0, 0.5),
+    -3px -3px 10px rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.clay-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px rgba(124, 58, 237, 0.4),
+    0 0 35px rgba(34, 211, 238, 0.2);
+}
+
+/* Clay Input */
+.clay-input {
+  background: #1A1C22;
+  box-shadow:
+    inset 6px 6px 12px rgba(0, 0, 0, 0.6),
+    inset -3px -3px 8px rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Clay Card */
+.clay-card {
+  background: linear-gradient(145deg, #232632, #1A1C22);
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.55),
+    -4px -4px 12px rgba(255, 255, 255, 0.03);
+  border-radius: 18px;
+  transition: all 0.25s ease;
+}
+
+.clay-card:hover {
+  transform: scale(1.03);
+  box-shadow:
+    0 0 25px rgba(124, 58, 237, 0.25),
+    0 0 40px rgba(34, 211, 238, 0.15);
+}
+
+/* Neon glow effects */
 .glow-purple {
   box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), 0 0 40px rgba(124, 58, 237, 0.1);
 }
@@ -108,39 +176,54 @@
   border: 1px solid rgba(124, 58, 237, 0.3);
 }
 
-.glass {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(90deg, #7C3AED, #22D3EE);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Animated gradient background */
-@keyframes gradient-shift {
+/* Soft blob animation */
+@keyframes blob-morph {
   0%, 100% {
-    background-position: 0% 50%;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   }
   50% {
-    background-position: 100% 50%;
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
   }
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 8s ease infinite;
+.animate-blob {
+  animation: blob-morph 8s ease-in-out infinite;
 }
 
-/* Pulse glow animation */
-@keyframes pulse-glow {
+/* Pulse glow animation - softer for clay */
+@keyframes pulse-glow-soft {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 0.3;
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: scale(1.05);
+    opacity: 0.5;
+    transform: scale(1.02);
   }
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
+  animation: pulse-glow-soft 4s ease-in-out infinite;
+}
+
+/* Slow float animation */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
 }
