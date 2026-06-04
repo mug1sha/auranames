@@ -20,21 +20,8 @@ export const metadata: Metadata = {
   generator: 'v0.app',
   keywords: ['AI', 'name generator', 'baby names', 'pet names', 'business names', 'brand names', 'elegant', 'prestige'],
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/auraname_logo.png',
+    apple: '/auraname_logo.png',
   },
 }
 

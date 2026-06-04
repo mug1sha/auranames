@@ -3,6 +3,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { ArrowUpCircle, Globe, MessageSquare, Code, Share2 } from "lucide-react"
+import Image from "next/image"
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -61,9 +62,6 @@ const Footer = () => {
           {/* Logo & Info Section */}
           <div className="lg:col-span-5 flex flex-col items-start">
             <div className="flex items-center gap-3 mb-8 group cursor-pointer">
-              <div className="navbar-logo-clay w-10 h-10 flex items-center justify-center">
-                <span className="text-navy font-black text-xl">A</span>
-              </div>
               <span className="text-3xl font-black tracking-tighter text-white">
                 <span className="text-primary">Aura</span>Names
               </span>
@@ -114,13 +112,13 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-gold-dark/5 gap-6">
-          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-8">
-            <p className="text-muted-foreground font-bold text-sm tracking-wide">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+            <p className="text-muted-foreground font-bold text-[10px] xs:text-xs md:text-sm tracking-wide text-center md:text-left whitespace-nowrap">
               © {currentYear} AURANAMES. ALL RIGHTS RESERVED.
             </p>
             <div className="flex items-center gap-6">
               <span className="w-1.5 h-1.5 rounded-full bg-gold-dark/30 hidden md:block" />
-              <p className="text-muted-foreground/60 text-xs font-black uppercase tracking-[0.1em]">
+              <p className="text-muted-foreground/60 text-[9px] md:text-xs font-black uppercase tracking-[0.1em] whitespace-nowrap">
                 Engineered with AI Precision
               </p>
             </div>
