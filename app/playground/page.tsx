@@ -65,36 +65,70 @@ export default function PlaygroundPage() {
     setPrompt("")
     setIsGenerating(true)
 
-    // 1. Add User Message
-    const userMsg: Message = {
-      role: 'user',
-      content: finalPrompt,
-      timestamp: Date.now()
-    }
-    await addMessage(activeSessionId, userMsg)
+    try {
+      // 1. Add User Message
+      const userMsg: Message = {
+        role: 'user',
+        content: finalPrompt,
+        timestamp: Date.now()
+      }
+      await addMessage(activeSessionId, userMsg)
 
-    // 2. Update Session Title if it's the first message
-    if (messages.length === 0) {
-      const title = finalPrompt.length > 20 ? finalPrompt.substring(0, 20) + "..." : finalPrompt
-      await updateSessionTitle(activeSessionId, title)
-    }
+      // 2. Update Session Title if it's the first message
+      if (messages.length === 0) {
+        const title = finalPrompt.length > 20 ? finalPrompt.substring(0, 20) + "..." : finalPrompt
+        await updateSessionTitle(activeSessionId, title)
+      }
 
-    // 3. Simulate AI response
-    setTimeout(async () => {
-      const mockResults: Result[] = [
-        { name: "CodeNova", meaning: "A new star in the coding universe", score: 98, domain: "available" },
-        { name: "DevAura", meaning: "The spiritual essence of development", score: 95, domain: "taken" },
-        { name: "NovaScript", meaning: "Revolutionary scripting foundation", score: 92, domain: "premium" },
-      ]
+      // 3. Call Real AI API
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          category: "Startup", // Default category for continuous chat
+          description: finalPrompt,
+          style: "modern"
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) throw new Error(data.error || "Generation failed");
+
+      // 4. Map API results to Playground format
+      const apiResults: Result[] = [
+        ...data.curatedNames.map((n: any) => ({
+          name: n.name,
+          meaning: n.meaning || "A sophisticated name for your brand.",
+          score: Math.floor(Math.random() * 15) + 85, // Mock score if API doesn't provide
+          domain: "available"
+        })),
+        ...data.recommendedNames.map((n: any) => ({
+          name: n.name,
+          meaning: n.definition || "Premium brand identity.",
+          score: Math.floor(Math.random() * 10) + 90,
+          domain: "premium"
+        }))
+      ];
       
       const assistantMsg: Message = {
         role: 'assistant',
-        content: mockResults,
+        content: apiResults,
         timestamp: Date.now()
       }
       await addMessage(activeSessionId, assistantMsg)
+    } catch (error: any) {
+      console.error("Playground error:", error);
+      // Add error message to thread
+      const errorMsg: Message = {
+        role: 'assistant',
+        content: `I encountered an error: ${error.message}. Please check your configuration and try again.`,
+        timestamp: Date.now()
+      }
+      await addMessage(activeSessionId, errorMsg)
+    } finally {
       setIsGenerating(false)
-    }, 2000)
+    }
   }
 
   return (

@@ -11,7 +11,8 @@ import {
   orderBy,
   getDoc,
   deleteDoc,
-  serverTimestamp
+  serverTimestamp,
+  arrayUnion
 } from 'firebase/firestore';
 
 export interface Result {
@@ -57,46 +58,57 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   loading: true,
 
   createSession: async (title = "New Workspace") => {
-    const user = auth.currentUser;
-    if (!user) return "";
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("User not authenticated");
 
-    const docRef = await addDoc(collection(db, "sessions"), {
-      userId: user.uid,
-      title,
-      messages: [],
-      lastUpdated: serverTimestamp(),
-      createdAt: serverTimestamp(),
-    });
+      const docRef = await addDoc(collection(db, "sessions"), {
+        userId: user.uid,
+        title,
+        messages: [],
+        lastUpdated: serverTimestamp(),
+        createdAt: serverTimestamp(),
+      });
 
-    return docRef.id;
+      return docRef.id;
+    } catch (error) {
+      console.error("Error creating session:", error);
+      return "";
+    }
   },
 
   setActiveSession: (id) => set({ activeSessionId: id }),
 
   addMessage: async (sessionId, message) => {
-    const sessionRef = doc(db, "sessions", sessionId);
-    const sessionDoc = await getDoc(sessionRef);
-    
-    if (sessionDoc.exists()) {
-      const currentMessages = sessionDoc.data().messages || [];
-      const updatedMessages = [...currentMessages, message];
-      
+    try {
+      const sessionRef = doc(db, "sessions", sessionId);
       await updateDoc(sessionRef, {
-        messages: updatedMessages,
+        messages: arrayUnion(message),
         lastUpdated: serverTimestamp()
       });
+    } catch (error) {
+      console.error("Error adding message:", error);
+      throw error;
     }
   },
 
   updateSessionTitle: async (sessionId, title) => {
-    const sessionRef = doc(db, "sessions", sessionId);
-    await updateDoc(sessionRef, { title });
+    try {
+      const sessionRef = doc(db, "sessions", sessionId);
+      await updateDoc(sessionRef, { title });
+    } catch (error) {
+      console.error("Error updating session title:", error);
+    }
   },
 
   deleteSession: async (sessionId) => {
-    await deleteDoc(doc(db, "sessions", sessionId));
-    if (get().activeSessionId === sessionId) {
-      set({ activeSessionId: null });
+    try {
+      await deleteDoc(doc(db, "sessions", sessionId));
+      if (get().activeSessionId === sessionId) {
+        set({ activeSessionId: null });
+      }
+    } catch (error) {
+      console.error("Error deleting session:", error);
     }
   },
 
@@ -122,10 +134,12 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       
       set({ sessions, loading: false });
       
-      // Auto-set first session as active if none selected
       if (!get().activeSessionId && sessions.length > 0) {
         set({ activeSessionId: sessions[0].id });
       }
+    }, (error) => {
+      console.error("Firestore snapshot error:", error);
+      set({ loading: false });
     });
 
     return unsubscribe;
