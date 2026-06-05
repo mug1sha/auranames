@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateSchema } from "../../../validators/generate.schema";
 import { GenerationService } from "../../../services/generation.service";
 import { CacheService } from "../../../services/cache.service";
-import { PrismaClient } from "@prisma/client";
-
-// Singleton Prisma instance for the API route
-const prisma = new PrismaClient();
+import { prisma } from "../../../lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
