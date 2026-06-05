@@ -26,7 +26,7 @@ const Footer = () => {
         { label: "Generator", href: "/" },
         { label: "About", href: "/about" },
         { label: "Pricing", href: "#" },
-        { label: "Features", href: "/#features" },
+        { label: "Features", href: "/features" },
         { label: "API", href: "#" },
       ],
     },

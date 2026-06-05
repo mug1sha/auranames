@@ -67,7 +67,7 @@ export function Navbar() {
               {["Features", "Generator", "About"].map((item) => (
                 <NavLink 
                   key={item}
-                  href={item === "About" ? "/about" : `/#${item.toLowerCase()}`}
+                  href={item === "About" ? "/about" : item === "Features" ? "/features" : `/#${item.toLowerCase()}`}
                   isHovered={hoveredLink === item}
                   onHover={() => setHoveredLink(item)}
                   onLeave={() => setHoveredLink(null)}
@@ -198,7 +198,7 @@ export function Navbar() {
                 transition={{ delay: i * 0.1 }}
               >
                 <Link
-                  href={item === "About" ? "/about" : `/#${item.toLowerCase()}`}
+                  href={item === "About" ? "/about" : item === "Features" ? "/features" : `/#${item.toLowerCase()}`}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-4xl font-bold tracking-tight hover:text-gold transition-colors block text-center font-[family-name:var(--font-playfair)]"
                 >
