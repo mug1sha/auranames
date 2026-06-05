@@ -1,11 +1,9 @@
 import { getGroq } from "../lib/groq";
 import { buildPrompt } from "../lib/prompt-builder";
-import { FilterService } from "./filter.service";
-import { ScoringService } from "./scoring.service";
-import { GeneratedNameResult, ScoredName } from "../types/name";
+import { StandardName, RecommendedName } from "../lib/types/name";
 
 export class GenerationService {
-  static async generateNames(category: string, description: string, style?: string): Promise<ScoredName[]> {
+  static async generateNames(category: string, description: string, style?: string): Promise<{ curatedNames: StandardName[], recommendedNames: RecommendedName[] }> {
     const prompt = buildPrompt(category, description, style);
     const groq = getGroq();
 
@@ -27,24 +25,22 @@ export class GenerationService {
       throw new Error("Empty response from AI");
     }
 
-    let parsed: { names: GeneratedNameResult[] };
+    let parsed: { curatedNames: StandardName[], recommendedNames: RecommendedName[] };
     try {
       parsed = JSON.parse(content);
-      if (!Array.isArray(parsed.names)) {
-        throw new Error("Invalid format: names is not an array");
+      if (!Array.isArray(parsed.curatedNames) || !Array.isArray(parsed.recommendedNames)) {
+        throw new Error("Invalid format: curatedNames or recommendedNames is not an array");
       }
     } catch (error) {
       console.error("Failed to parse JSON:", content);
       throw new Error("Failed to parse AI response");
     }
 
-    // 1. Filtering
-    const filteredNames = FilterService.filterNames(parsed.names);
-
-    // 2. Scoring
-    const scoredNames = ScoringService.scoreNames(filteredNames);
-
-    // 3. Keep top results (e.g. top 20 to ensure high quality)
-    return scoredNames.slice(0, 20);
+    // Since we are explicitly asking for 10 and 3, we bypass the aggressive filtering 
+    // to preserve the AI's intended curation.
+    return {
+      curatedNames: parsed.curatedNames.slice(0, 10),
+      recommendedNames: parsed.recommendedNames.slice(0, 3)
+    };
   }
 }

@@ -1,7 +1,9 @@
+import { StandardName, RecommendedName } from "./types/name"
+
 export async function generateNames(
   category: string,
   description: string
-): Promise<string[]> {
+): Promise<{ curatedNames: StandardName[], recommendedNames: RecommendedName[] }> {
   const response = await fetch("/api/generate", {
     method: "POST",
     headers: {
@@ -16,12 +18,12 @@ export async function generateNames(
     throw new Error(data?.error || "Failed to generate names. Check your server logs or API keys.")
   }
 
-  if (!data || !data.success || !Array.isArray(data.names)) {
+  if (!data || !data.success || !Array.isArray(data.curatedNames) || !Array.isArray(data.recommendedNames)) {
     throw new Error(data?.error || "Failed to parse names")
   }
 
-  // Extract just the name strings from the ScoredName objects
-  const names = data.names.map((n: any) => n.name)
-
-  return names
+  return {
+    curatedNames: data.curatedNames,
+    recommendedNames: data.recommendedNames
+  }
 }

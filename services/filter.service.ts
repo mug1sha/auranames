@@ -1,4 +1,4 @@
-import { GeneratedNameResult } from "../types/name";
+import { GeneratedNameResult } from "../lib/types/name";
 
 export class FilterService {
   static filterNames(names: GeneratedNameResult[]): GeneratedNameResult[] {

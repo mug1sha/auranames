@@ -1,4 +1,4 @@
-import { GeneratedNameResult, ScoredName } from "../types/name";
+import { GeneratedNameResult, ScoredName } from "../lib/types/name";
 
 export class ScoringService {
   static scoreNames(names: GeneratedNameResult[]): ScoredName[] {

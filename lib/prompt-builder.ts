@@ -1,7 +1,7 @@
 export function buildPrompt(category: string, description: string, style?: string): string {
   return `You are an elite naming strategist.
 
-Generate 50 unique names.
+Based on the user's input, generate exactly 10 curated names and 3 highly recommended names.
 
 Category:
 ${category}
@@ -13,20 +13,23 @@ Description:
 ${description}
 
 Rules:
-- Short
+- Short (preferably one word)
 - Easy to pronounce
-- Memorable
-- One word preferred
-- Brandable
+- Memorable and brandable
 - Avoid generic terms
 - Avoid existing famous brands
+- The 3 recommended names MUST include a detailed, human-sounding "definition" explaining the vibe, origin, or why the name perfectly fits the description.
 
 Return JSON format strictly:
 {
-  "names": [
-    {
-      "name": "NameHere",
-      "explanation": "Brief explanation of why it works"
+  "curatedNames": [
+    { "name": "NameOne" },
+    { "name": "NameTwo" }
+  ],
+  "recommendedNames": [
+    { 
+      "name": "TopPickOne", 
+      "definition": "Derived from the Latin word for light, this name feels bright, energetic, and perfectly captures the essence of your vision." 
     }
   ]
 }

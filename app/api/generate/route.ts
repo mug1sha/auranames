@@ -25,16 +25,16 @@ export async function POST(req: NextRequest) {
     
     let namesToReturn;
 
-    if (cachedResults && cachedResults.length > 0) {
+    if (cachedResults && cachedResults !== null && typeof cachedResults === 'object' && 'curatedNames' in cachedResults) {
       namesToReturn = cachedResults;
       // In a real production app with high load, we might not track every cache hit 
       // or we'd do it asynchronously. For now, just return.
     } else {
-      // 3. Generate via AI -> Filter -> Score
+      // 3. Generate via AI
       namesToReturn = await GenerationService.generateNames(category, description, style);
       
       // 4. Set Cache
-      if (namesToReturn.length > 0) {
+      if (namesToReturn && namesToReturn.curatedNames.length > 0) {
         await CacheService.set(cacheKey, namesToReturn);
       }
     }
@@ -52,10 +52,15 @@ export async function POST(req: NextRequest) {
           }
         });
 
-        // Store generated names in DB
-        if (namesToReturn.length > 0) {
+        // Store generated names in DB (combining curated and recommended for analytics)
+        if (namesToReturn) {
+          const allNamesToStore = [
+            ...namesToReturn.curatedNames.map((n: any) => ({ name: n.name, score: 80, explanation: null })),
+            ...namesToReturn.recommendedNames.map((n: any) => ({ name: n.name, score: 100, explanation: n.definition }))
+          ];
+          
           await prisma.generatedName.createMany({
-            data: namesToReturn.map((n: any) => ({
+            data: allNamesToStore.map((n: any) => ({
               generationId: generation.id,
               name: n.name,
               score: n.score,
@@ -71,7 +76,7 @@ export async function POST(req: NextRequest) {
     // 6. Return response
     return NextResponse.json({
       success: true,
-      names: namesToReturn,
+      ...namesToReturn,
     });
 
   } catch (error: any) {
