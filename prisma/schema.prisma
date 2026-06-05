@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String      @id @default(uuid())
+  email     String      @unique
+  createdAt DateTime    @default(now())
+
+  generations Generation[]
+  favorites   Favorite[]
+}
+
+model Generation {
+  id          String   @id @default(uuid())
+  userId      String?  // Optional for unauthenticated users, though schema mentions relation to User
+  user        User?    @relation(fields: [userId], references: [id])
+  category    String
+  description String
+  style       String?
+  createdAt   DateTime @default(now())
+
+  generatedNames GeneratedName[]
+
+  @@index([userId])
+}
+
+model GeneratedName {
+  id            String   @id @default(uuid())
+  generationId  String
+  generation    Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  name          String
+  score         Int
+  explanation   String?
+  copiedCount   Int      @default(0)
+  favoriteCount Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  favorites     Favorite[]
+
+  @@index([generationId])
+}
+
+model Favorite {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generatedNameId String
+  generatedName   GeneratedName @relation(fields: [generatedNameId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+
+  @@unique([userId, generatedNameId])
+  @@index([userId])
+}
