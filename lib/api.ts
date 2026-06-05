@@ -2,26 +2,26 @@ export async function generateNames(
   category: string,
   description: string
 ): Promise<string[]> {
-  const response = await fetch("/api/generate-names", {
+  const response = await fetch("/api/generate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ category, description }),
+    body: JSON.stringify({ category, description, style: "modern" }),
   })
 
   if (!response.ok) {
     throw new Error("Failed to generate names")
   }
 
-  const text = await response.text()
+  const data = await response.json()
   
-  // Parse the numbered list
-  const names = text
-    .split("\n")
-    .filter((line) => /^\d+\./.test(line.trim()))
-    .map((line) => line.replace(/^\d+\.\s*/, "").trim())
-    .filter((name) => name.length > 0)
+  if (!data.success || !Array.isArray(data.names)) {
+    throw new Error(data.error || "Failed to parse names")
+  }
+
+  // Extract just the name strings from the ScoredName objects
+  const names = data.names.map((n: any) => n.name)
 
   return names
 }
