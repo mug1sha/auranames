@@ -1,4 +1,4 @@
-import { groq } from "../lib/groq";
+import { getGroq } from "../lib/groq";
 import { buildPrompt } from "../lib/prompt-builder";
 import { FilterService } from "./filter.service";
 import { ScoringService } from "./scoring.service";
@@ -7,6 +7,7 @@ import { GeneratedNameResult, ScoredName } from "../types/name";
 export class GenerationService {
   static async generateNames(category: string, description: string, style?: string): Promise<ScoredName[]> {
     const prompt = buildPrompt(category, description, style);
+    const groq = getGroq();
 
     let completion;
     try {

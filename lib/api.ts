@@ -10,14 +10,14 @@ export async function generateNames(
     body: JSON.stringify({ category, description, style: "modern" }),
   })
 
+  const data = await response.json().catch(() => null)
+
   if (!response.ok) {
-    throw new Error("Failed to generate names")
+    throw new Error(data?.error || "Failed to generate names. Check your server logs or API keys.")
   }
 
-  const data = await response.json()
-  
-  if (!data.success || !Array.isArray(data.names)) {
-    throw new Error(data.error || "Failed to parse names")
+  if (!data || !data.success || !Array.isArray(data.names)) {
+    throw new Error(data?.error || "Failed to parse names")
   }
 
   // Extract just the name strings from the ScoredName objects
