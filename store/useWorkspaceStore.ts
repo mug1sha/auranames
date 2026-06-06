@@ -254,7 +254,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       }
     }, (error) => {
       console.error("Firestore snapshot error:", error);
-      set({ loading: false });
+      set({ sessions: [], loading: false, activeSessionId: null });
     });
 
     // Return combined unsubscribe
