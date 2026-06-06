@@ -173,23 +173,34 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
   fetchSessions: (userId) => {
     set({ loading: true });
+    // Simplify query to only filter by userId to avoid index requirement
+    // Sorting will be handled client-side in the onSnapshot listener
     const q = query(
       collection(db, "sessions"),
-      where("userId", "==", userId),
-      orderBy("lastUpdated", "desc"),
-      limit(15)
+      where("userId", "==", userId)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const sessions = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Session[];
+      const sessions = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Session[];
       
-      set({ sessions, loading: false });
+      // Sort client-side by lastUpdated (descending)
+      sessions.sort((a, b) => {
+        const timeA = a.lastUpdated?.toMillis?.() || 0;
+        const timeB = b.lastUpdated?.toMillis?.() || 0;
+        return timeB - timeA;
+      });
+
+      // Limit to 15 most recent for performance
+      const limitedSessions = sessions.slice(0, 15);
       
-      if (!get().activeSessionId && sessions.length > 0) {
-        set({ activeSessionId: sessions[0].id });
+      set({ sessions: limitedSessions, loading: false });
+      
+      if (!get().activeSessionId && limitedSessions.length > 0) {
+        set({ activeSessionId: limitedSessions[0].id });
       }
     }, (error) => {
       console.error("Firestore snapshot error:", error);
