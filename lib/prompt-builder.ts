@@ -1,3 +1,11 @@
+/**
+ * Builds a single instruction prompt for generating curated and recommended naming suggestions.
+ *
+ * @param category - Placed under "Category:" in the prompt to scope the naming task
+ * @param description - Placed under "Description:" to describe the product, service, or concept
+ * @param style - Placed under "Style:" to guide tone/feel; defaults to "Modern" when omitted
+ * @returns The complete prompt string to send to a naming-generation model, formatted with rules and a strict JSON output schema and ending with a trailing newline
+ */
 export function buildPrompt(category: string, description: string, style?: string): string {
   return `You are an elite naming strategist.
 

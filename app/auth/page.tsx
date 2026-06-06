@@ -15,6 +15,17 @@ const floatingNames = [
   "CodeNest"
 ]
 
+/**
+ * Authentication page component that provides Google and email/password sign-in and signup flows.
+ *
+ * Renders a two-column layout (animated hero panel on larger screens and an auth card) and manages
+ * local state for email, password, login mode, and error messages. Handles three authentication
+ * flows: Google sign-in via a popup, email/password sign-in, and email/password account creation.
+ * On successful authentication the component updates the global auth store with the authenticated
+ * user and navigates to `/playground`. Authentication errors are captured and displayed in the UI.
+ *
+ * @returns The authentication page JSX element.
+ */
 export default function AuthPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

@@ -32,6 +32,12 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+/**
+ * Root application layout that applies global fonts and background, wraps page content with authentication, and conditionally enables analytics.
+ *
+ * @param children - The page or component tree to render inside the layout; receives authentication context from `AuthProvider`.
+ * @returns The top-level HTML structure (`<html>` and `<body>`) with configured font CSS variables and background classes, containing `children` wrapped by `AuthProvider` and `Analytics` rendered only in production.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

@@ -4,6 +4,12 @@ import { GenerationService } from "../../../services/generation.service";
 import { CacheService } from "../../../services/cache.service";
 import { prisma } from "../../../lib/prisma";
 
+/**
+ * Handle POST requests to generate names: validate the request, return cached results when available,
+ * invoke AI generation on cache miss, enqueue anonymous analytics persistence, and respond with the generated names.
+ *
+ * @returns A JSON HTTP response. On success: an object with `success: true` and the generated name lists (`curatedNames`, `recommendedNames`, etc.). On validation failure: `success: false`, `error`, and `details` describing validation errors. On other failures: `success: false` and an `error` message.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

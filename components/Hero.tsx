@@ -6,6 +6,12 @@ interface HeroProps {
   onStartClick: () => void
 }
 
+/**
+ * Renders the full-viewport hero section with animated decorative background elements, marketing content, call-to-action buttons, statistics, and an animated 3D clay graphic.
+ *
+ * @param onStartClick - Callback invoked when the primary "Start Creating" button is clicked.
+ * @returns The hero section JSX element.
+ */
 export function Hero({ onStartClick }: HeroProps) {
   return (
     <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-28 md:pt-20">

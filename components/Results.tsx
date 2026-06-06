@@ -10,6 +10,16 @@ interface ResultsProps {
   isLoading: boolean
 }
 
+/**
+ * Render recommended and curated name results with per-item copy-to-clipboard feedback and a regenerate action.
+ *
+ * Renders two sections ("Top Picks/Recommended" and "Curated Shortlist"). Each result item can be copied to the clipboard with a temporary visual "Copied" indicator; the regenerate button invokes `onRegenerate` and reflects the `isLoading` state.
+ *
+ * @param results - The results object containing `recommendedNames` and `curatedNames`; if `null`, the component renders nothing.
+ * @param onRegenerate - Callback invoked when the "Regenerate Options" button is clicked.
+ * @param isLoading - When true, disables the regenerate button and shows a loading state.
+ * @returns A section element containing the rendered results and controls, or `null` when `results` is `null`.
+ */
 export function Results({ results, onRegenerate, isLoading }: ResultsProps) {
   const [copiedIndex, setCopiedIndex] = useState<string | null>(null)
 

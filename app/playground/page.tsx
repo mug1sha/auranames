@@ -27,6 +27,13 @@ const placeholders = [
   "Describe your AI tool..."
 ]
 
+/**
+ * Interactive Playground page for creating and browsing generated brand names.
+ *
+ * Renders a scrollable conversation-style workspace that lets users enter prompts, auto-creates or updates workspace sessions, sends prompts to the generation API, and displays generated name results with favorite and copy actions.
+ *
+ * @returns The React element for the Playground page UI.
+ */
 export default function PlaygroundPage() {
   const { sessions, activeSessionId, addMessage, updateSessionTitle, favorites, toggleFavorite } = useWorkspaceStore()
   const [prompt, setPrompt] = useState("")

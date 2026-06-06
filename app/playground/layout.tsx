@@ -26,6 +26,11 @@ import {
   ExternalLink
 } from "lucide-react"
 
+/**
+ * Render the playground layout: a responsive left sidebar for workspace/session management, a main content area, and animated overlays for favorites and settings.
+ *
+ * @returns A JSX element containing the full playground layout (sidebar, main content, favorites overlay, and settings modal).
+ */
 export default function PlaygroundLayout({
   children,
 }: {

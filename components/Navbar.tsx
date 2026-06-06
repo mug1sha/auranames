@@ -4,6 +4,13 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-
 import Link from "next/link"
 import { useState } from "react"
 
+/**
+ * Renders the site navigation bar including logo, desktop links and CTA, decorative motion elements, and a full-screen mobile menu.
+ *
+ * The navbar automatically hides when the user scrolls downward past 150px and reappears when scrolling up. On small screens it exposes a toggleable full-screen menu; clicking a mobile link closes that menu.
+ *
+ * @returns A JSX element representing the navigation bar.
+ */
 export function Navbar() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [hidden, setHidden] = useState(false)
