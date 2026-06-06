@@ -141,7 +141,9 @@ export default function PlaygroundLayout({
               <div className="navbar-logo-clay p-2">
                 <Sparkles className="w-5 h-5 text-[#0A192F]" />
               </div>
-              <span className="text-xl font-bold font-[family-name:var(--font-playfair)] gradient-text">AuraNames</span>
+              <span className="text-xl font-bold font-[family-name:var(--font-playfair)]">
+              <span className="gradient-text">Aura</span><span className="text-white">Names</span>
+            </span>
             </div>
             <button 
               onClick={() => setIsSidebarOpen(false)}
@@ -281,7 +283,9 @@ export default function PlaygroundLayout({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="text-lg font-bold font-[family-name:var(--font-playfair)] gradient-text">AuraNames</span>
+          <span className="text-lg font-bold font-[family-name:var(--font-playfair)]">
+            <span className="gradient-text">Aura</span><span className="text-white">Names</span>
+          </span>
           <div className="w-10" /> {/* Spacer */}
         </div>
 

@@ -48,8 +48,8 @@ export function Navbar() {
             {/* Logo Section */}
             <Link href="/" className="flex items-center gap-2 md:gap-3 group pr-1 md:pr-2 shrink-0">
               <div className="flex flex-col">
-                <span className="text-base md:text-lg font-bold text-foreground leading-none tracking-tight">
-                  <span className="gradient-text">Aura</span>Names
+                <span className="text-base md:text-lg font-bold leading-none tracking-tight">
+                  <span className="gradient-text">Aura</span><span className="text-white">Names</span>
                 </span>
                 <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.25em] font-medium text-gold/60">AI Powered</span>
               </div>

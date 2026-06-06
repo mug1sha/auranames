@@ -245,7 +245,7 @@ export default function FeaturesPage() {
 
               <div className="space-y-6">
                 <h3 className="text-sm font-black uppercase tracking-widest text-gold mb-6 flex items-center gap-2">
-                  <Sparkles size={14} /> AuraNames
+                  <Sparkles size={14} /> Aura<span className="text-white">Names</span>
                 </h3>
                 {["Nexora", "Veliqo", "Auralith", "Noventra"].map((name, i) => (
                   <motion.div 

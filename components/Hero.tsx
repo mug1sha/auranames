@@ -59,7 +59,7 @@ export function Hero({ onStartClick }: HeroProps) {
             >
               <span className="text-foreground">Prestige</span>
               <br className="hidden xs:block" />
-              <span className="gradient-text ml-2 xs:ml-0">Aura</span>Names
+              <span className="gradient-text ml-2 xs:ml-0">Aura</span><span className="text-white">Names</span>
             </motion.h1>
 
             <motion.p
