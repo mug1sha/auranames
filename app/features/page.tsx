@@ -245,7 +245,7 @@ export default function FeaturesPage() {
 
               <div className="space-y-6">
                 <h3 className="text-sm font-black uppercase tracking-widest text-gold mb-6 flex items-center gap-2">
-                  <Sparkles size={14} /> AuraNames
+                  <Sparkles size={14} /> Aura<span className="text-white">Names</span>
                 </h3>
                 {["Nexora", "Veliqo", "Auralith", "Noventra"].map((name, i) => (
                   <motion.div 
@@ -309,7 +309,7 @@ export default function FeaturesPage() {
               </div>
               <h2 className="text-4xl md:text-6xl font-bold mb-8 font-[family-name:var(--font-playfair)]">Intelligent Creativity Engine</h2>
               <p className="text-xl text-muted-foreground leading-relaxed font-medium mb-8">
-                AuraNames doesn't just shuffle letters. It analyzes the deeper components of successful branding.
+                AuraNames doesn&apos;t just shuffle letters. It analyzes the deeper components of successful branding.
               </p>
               <p className="text-lg text-muted-foreground/80 leading-relaxed font-medium">
                 Our engine ensures every generated name is optimized for emotional connection and long-term brand equity.
