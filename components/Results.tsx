@@ -106,11 +106,16 @@ export function Results({ results, onRegenerate, isLoading }: ResultsProps) {
                 transition={{ duration: 0.4, delay: index * 0.05 }}
                 whileHover={{ scale: 1.03 }}
                 onClick={() => copyToClipboard(item.name, `cur-${index}`)}
-                className="group clay-surface-sm p-6 cursor-pointer text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[100px]"
+                className="group clay-surface-sm p-5 cursor-pointer text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[120px]"
               >
-                <span className="text-xl font-bold text-foreground group-hover:text-gold transition-colors font-[family-name:var(--font-playfair)]">
+                <span className="text-xl font-bold text-foreground group-hover:text-gold transition-colors font-[family-name:var(--font-playfair)] mb-1">
                   {item.name}
                 </span>
+                {item.meaning && (
+                  <p className="text-[10px] text-muted-foreground line-clamp-2 px-2 group-hover:opacity-0 transition-opacity">
+                    {item.meaning}
+                  </p>
+                )}
                 <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-2">
                   <span className="text-[10px] text-gold font-bold uppercase tracking-widest flex items-center gap-1">
                     {copiedIndex === `cur-${index}` ? (

@@ -18,13 +18,14 @@ Rules:
 - Memorable and brandable
 - Avoid generic terms
 - Avoid existing famous brands
-- The 3 recommended names MUST include a detailed, human-sounding "definition" explaining the vibe, origin, or why the name perfectly fits the description.
+- EVERY curated name must include a short (max 10 words) "meaning" explaining the name's essence.
+- The 3 recommended names MUST include a detailed, human-sounding "definition" (2-3 sentences) explaining the vibe, origin, or why the name perfectly fits the description.
 
 Return JSON format strictly:
 {
   "curatedNames": [
-    { "name": "NameOne" },
-    { "name": "NameTwo" }
+    { "name": "NameOne", "meaning": "A short, catchy essence description." },
+    { "name": "NameTwo", "meaning": "Another brief description." }
   ],
   "recommendedNames": [
     { 

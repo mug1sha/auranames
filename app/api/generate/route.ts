@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
         // Store generated names in DB (combining curated and recommended for analytics)
         if (namesToReturn) {
           const allNamesToStore = [
-            ...namesToReturn.curatedNames.map((n: any) => ({ name: n.name, score: 80, explanation: null })),
+            ...namesToReturn.curatedNames.map((n: any) => ({ name: n.name, score: 80, explanation: n.meaning || null })),
             ...namesToReturn.recommendedNames.map((n: any) => ({ name: n.name, score: 100, explanation: n.definition }))
           ];
           
