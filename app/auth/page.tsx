@@ -5,7 +5,6 @@ import { useState, useEffect } from "react"
 import { auth } from "@/lib/firebase"
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/useAuthStore"
 
 const floatingNames = [
   "NovaFlow",
@@ -32,13 +31,11 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
   const [error, setError] = useState("")
   const router = useRouter()
-  const { setUser } = useAuthStore()
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider()
     try {
-      const result = await signInWithPopup(auth, provider)
-      setUser(result.user)
+      await signInWithPopup(auth, provider)
       router.push("/playground")
     } catch (err: any) {
       setError(err.message)
@@ -50,11 +47,9 @@ export default function AuthPage() {
     setError("")
     try {
       if (isLogin) {
-        const result = await signInWithEmailAndPassword(auth, email, password)
-        setUser(result.user)
+        await signInWithEmailAndPassword(auth, email, password)
       } else {
-        const result = await createUserWithEmailAndPassword(auth, email, password)
-        setUser(result.user)
+        await createUserWithEmailAndPassword(auth, email, password)
       }
       router.push("/playground")
     } catch (err: any) {
