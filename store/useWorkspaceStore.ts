@@ -133,6 +133,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setActiveSession: (id) => set({ activeSessionId: id }),
 
   addMessage: async (sessionId, message) => {
+    if (!sessionId) {
+      console.error("addMessage failed: sessionId is null");
+      return;
+    }
     try {
       const sessionRef = doc(db, "sessions", sessionId);
       await updateDoc(sessionRef, {
@@ -146,6 +150,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   updateSessionTitle: async (sessionId, title) => {
+    if (!sessionId) {
+      console.error("updateSessionTitle failed: sessionId is null");
+      return;
+    }
     try {
       const sessionRef = doc(db, "sessions", sessionId);
       await updateDoc(sessionRef, { title });

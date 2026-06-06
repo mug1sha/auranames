@@ -97,7 +97,7 @@ export default function PlaygroundPage() {
       if (messages.length === 0) {
         console.log("Playground: Updating session title...");
         const title = finalPrompt.length > 20 ? finalPrompt.substring(0, 20) + "..." : finalPrompt
-        await updateSessionTitle(activeSessionId, title)
+        await updateSessionTitle(sessionId, title)
       }
 
       // 3. Call Real AI API
@@ -141,7 +141,7 @@ export default function PlaygroundPage() {
         content: apiResults,
         timestamp: Date.now()
       }
-      await addMessage(activeSessionId, assistantMsg)
+      await addMessage(sessionId, assistantMsg)
       console.log("Playground: Assistant message added successfully");
     } catch (error: any) {
       console.error("Playground error:", error);
