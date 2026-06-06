@@ -8,12 +8,9 @@ import {
   onSnapshot, 
   query, 
   where, 
-  orderBy,
-  getDoc,
   deleteDoc,
   serverTimestamp,
   arrayUnion,
-  limit,
   setDoc
 } from 'firebase/firestore';
 
