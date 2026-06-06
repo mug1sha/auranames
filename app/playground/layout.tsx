@@ -60,6 +60,7 @@ export default function PlaygroundLayout({
 
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [copiedFavorite, setCopiedFavorite] = useState<string | null>(null)
 
   // Sync local settings state when store settings change (loaded from Firestore)
   useEffect(() => {
@@ -120,6 +121,12 @@ export default function PlaygroundLayout({
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleCopyFavorite = (name: string) => {
+    navigator.clipboard.writeText(name)
+    setCopiedFavorite(name)
+    setTimeout(() => setCopiedFavorite(null), 2000)
   }
 
   return (
@@ -360,12 +367,15 @@ export default function PlaygroundLayout({
                         </div>
                         <div className="mt-4 flex gap-2">
                           <button 
-                            onClick={() => navigator.clipboard.writeText(name)}
+                            onClick={() => handleCopyFavorite(name)}
                             className="flex-1 py-2 clay-button text-xs font-bold"
                           >
-                            Copy
+                            {copiedFavorite === name ? 'Copied!' : 'Copy'}
                           </button>
-                          <button className="p-2 clay-button">
+                          <button 
+                            onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(name)}`, '_blank')}
+                            className="p-2 clay-button"
+                          >
                             <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
                           </button>
                         </div>
