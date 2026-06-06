@@ -81,7 +81,9 @@ export default function PlaygroundLayout({
 
   const handleNewSession = async () => {
     const id = await createSession()
-    setActiveSession(id)
+    if (id) {
+      setActiveSession(id)
+    }
     setShowFavorites(false)
     setIsSidebarOpen(false)
   }
