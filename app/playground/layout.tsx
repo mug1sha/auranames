@@ -19,7 +19,11 @@ import {
   Edit2,
   Check,
   X,
-  Loader2
+  Loader2,
+  Bell,
+  Shield,
+  Palette,
+  ExternalLink
 } from "lucide-react"
 
 export default function PlaygroundLayout({
@@ -35,12 +39,15 @@ export default function PlaygroundLayout({
     fetchSessions, 
     loading,
     updateSessionTitle,
-    deleteSession
+    deleteSession,
+    favorites
   } = useWorkspaceStore()
   const { user, setUser } = useAuthStore()
   const router = useRouter()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState("")
+  const [showSettings, setShowSettings] = useState(false)
+  const [showFavorites, setShowFavorites] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -58,6 +65,7 @@ export default function PlaygroundLayout({
   const handleNewSession = async () => {
     const id = await createSession()
     setActiveSession(id)
+    setShowFavorites(false)
   }
 
   const startEditing = (e: React.MouseEvent, id: string, title: string) => {
@@ -75,7 +83,7 @@ export default function PlaygroundLayout({
   }
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden font-sans">
       {/* Sidebar */}
       <aside className="w-72 border-r border-gold/10 flex flex-col bg-[#060F1F] z-20">
         <div className="p-6 flex-1 flex flex-col overflow-hidden">
@@ -107,14 +115,17 @@ export default function PlaygroundLayout({
                   {sessions.map((session) => (
                     <div
                       key={session.id}
-                      onClick={() => setActiveSession(session.id)}
+                      onClick={() => {
+                        setActiveSession(session.id);
+                        setShowFavorites(false);
+                      }}
                       className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-300
-                        ${activeSessionId === session.id 
+                        ${activeSessionId === session.id && !showFavorites
                           ? 'navbar-link-pill text-gold' 
                           : 'text-muted-foreground hover:text-foreground hover:bg-gold/5'
                         }`}
                     >
-                      <MessageSquare className={`w-4 h-4 shrink-0 ${activeSessionId === session.id ? 'text-gold' : 'text-muted-foreground group-hover:text-gold/70'}`} />
+                      <MessageSquare className={`w-4 h-4 shrink-0 ${activeSessionId === session.id && !showFavorites ? 'text-gold' : 'text-muted-foreground group-hover:text-gold/70'}`} />
                       
                       {editingId === session.id ? (
                         <form onSubmit={(e) => saveTitle(e, session.id)} className="flex-1 flex items-center gap-1" onClick={e => e.stopPropagation()}>
@@ -154,11 +165,19 @@ export default function PlaygroundLayout({
         </div>
 
         <div className="mt-auto p-4 space-y-1 border-t border-gold/5 bg-[#060F1F]/80 backdrop-blur-md">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-gold/5 transition-all group">
-            <Star className="w-4 h-4 group-hover:text-gold transition-colors" />
+          <button 
+            onClick={() => setShowFavorites(true)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group
+              ${showFavorites ? 'navbar-link-pill text-gold' : 'text-muted-foreground hover:text-foreground hover:bg-gold/5'}`}
+          >
+            <Star className={`w-4 h-4 ${showFavorites ? 'text-gold fill-gold' : 'group-hover:text-gold'} transition-colors`} />
             <span className="text-sm font-medium">Favorite Names</span>
           </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-gold/5 transition-all group">
+          
+          <button 
+            onClick={() => setShowSettings(true)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-gold/5 transition-all group"
+          >
             <Settings className="w-4 h-4 group-hover:text-gold transition-colors" />
             <span className="text-sm font-medium">Settings</span>
           </button>
@@ -194,7 +213,181 @@ export default function PlaygroundLayout({
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/10 to-transparent" />
         </div>
         
-        {children}
+        {/* Favorites View Overlay */}
+        <AnimatePresence>
+          {showFavorites && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="absolute inset-0 z-30 bg-background/95 backdrop-blur-xl p-8 md:p-12 overflow-y-auto no-scrollbar"
+            >
+              <div className="max-w-4xl mx-auto">
+                <div className="flex items-center justify-between mb-12">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 clay-surface flex items-center justify-center text-gold">
+                      <Star className="w-6 h-6 fill-gold" />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-bold font-[family-name:var(--font-playfair)] text-foreground">Favorite Names</h2>
+                      <p className="text-sm text-muted-foreground">Your curated collection of premium brand identities.</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowFavorites(false)}
+                    className="p-3 clay-button text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {favorites.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-24 text-center">
+                    <div className="w-20 h-20 rounded-full bg-gold/5 flex items-center justify-center mb-6 border border-gold/10">
+                      <Star className="w-10 h-10 text-gold/20" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground mb-2">No favorites yet</h3>
+                    <p className="text-muted-foreground max-w-xs">Start exploring names in the playground and star the ones you love.</p>
+                  </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {favorites.map((name) => (
+                      <motion.div
+                        key={name}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="clay-card p-6 group"
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="text-xl font-bold font-[family-name:var(--font-playfair)] text-foreground">{name}</h3>
+                          <button 
+                            onClick={() => useWorkspaceStore.getState().toggleFavorite(name)}
+                            className="p-2 text-gold transition-colors"
+                          >
+                            <Star className="w-4 h-4 fill-gold" />
+                          </button>
+                        </div>
+                        <div className="mt-4 flex gap-2">
+                          <button 
+                            onClick={() => navigator.clipboard.writeText(name)}
+                            className="flex-1 py-2 clay-button text-xs font-bold"
+                          >
+                            Copy
+                          </button>
+                          <button className="p-2 clay-button">
+                            <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Settings Modal */}
+        <AnimatePresence>
+          {showSettings && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-background/80 backdrop-blur-sm">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="w-full max-w-2xl navbar-clay-pill overflow-hidden shadow-2xl"
+              >
+                <div className="flex h-[500px]">
+                  {/* Settings Nav */}
+                  <div className="w-48 border-r border-gold/10 bg-[#060F1F]/50 p-6 flex flex-col gap-2">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-gold/50 mb-4 px-2">Settings</h3>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-gold/10 text-gold text-sm font-bold border border-gold/20">
+                      <User className="w-4 h-4" /> General
+                    </button>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gold/5 text-sm font-medium transition-all">
+                      <Palette className="w-4 h-4" /> Theme
+                    </button>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gold/5 text-sm font-medium transition-all">
+                      <Bell className="w-4 h-4" /> Alerts
+                    </button>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gold/5 text-sm font-medium transition-all">
+                      <Shield className="w-4 h-4" /> Privacy
+                    </button>
+                  </div>
+
+                  {/* Settings Content */}
+                  <div className="flex-1 p-8 relative flex flex-col overflow-hidden">
+                    <button 
+                      onClick={() => setShowSettings(false)}
+                      className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+
+                    <div className="flex-1 overflow-y-auto no-scrollbar pr-2">
+                      <h2 className="text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground mb-8">General Preferences</h2>
+                      
+                      <div className="space-y-8">
+                        {/* Profile Section */}
+                        <section>
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-4">Account Profile</label>
+                          <div className="flex items-center gap-4 p-4 clay-surface-sm border-gold/10">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/30 to-gold-dark/20 flex items-center justify-center border-2 border-gold/30 glow-gold-sm">
+                              <User className="w-8 h-8 text-gold" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-lg font-bold text-foreground truncate">{user?.email || 'User Profile'}</div>
+                              <div className="text-xs text-gold font-bold">Aura Pro Member • Since 2026</div>
+                            </div>
+                            <button className="px-4 py-2 clay-button text-xs font-bold">Edit</button>
+                          </div>
+                        </section>
+
+                        {/* Language Section */}
+                        <section>
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">AI Model</label>
+                          <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
+                            <div className="flex items-center gap-3">
+                              <Sparkles className="w-4 h-4 text-gold" />
+                              <span className="text-sm font-medium text-foreground">GPT-4o (Aura Optimized)</span>
+                            </div>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/20 text-gold font-black uppercase tracking-tighter">Current</span>
+                          </div>
+                        </section>
+
+                        {/* Preferences */}
+                        <section>
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Workspace Data</label>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
+                              <span className="text-sm font-medium text-foreground">Cloud Sync</span>
+                              <div className="w-10 h-5 bg-gold rounded-full relative">
+                                <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-[#0A192F] rounded-full shadow-lg" />
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
+                              <span className="text-sm font-medium text-foreground">Usage Statistics</span>
+                              <div className="w-10 h-5 bg-gold/20 rounded-full relative border border-gold/20">
+                                <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-muted-foreground/50 rounded-full" />
+                              </div>
+                            </div>
+                          </div>
+                        </section>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-8 pt-6 border-t border-gold/10 flex justify-end gap-3">
+                      <button onClick={() => setShowSettings(false)} className="px-6 py-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Close</button>
+                      <button className="px-8 py-2 clay-button-gold text-xs">Save Changes</button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        
+        {!showFavorites && children}
       </main>
     </div>
   )
