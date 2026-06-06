@@ -13,7 +13,8 @@ import {
   deleteDoc,
   serverTimestamp,
   arrayUnion,
-  limit
+  limit,
+  setDoc
 } from 'firebase/firestore';
 
 export interface Result {
@@ -74,21 +75,23 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   // ... (previous actions)
 
   saveSettings: async (settings) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) return;
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("Save settings failed: No user authenticated");
+      return;
+    }
 
+    try {
       const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, { settings });
+      await setDoc(userRef, { 
+        settings,
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+      
       set({ settings });
     } catch (error) {
-      // If user doc doesn't exist, create it
-      const user = auth.currentUser;
-      if (user) {
-        const { setDoc } = await import('firebase/firestore');
-        await setDoc(doc(db, "users", user.uid), { settings }, { merge: true });
-        set({ settings });
-      }
+      console.error("Error persisting settings to Firestore:", error);
+      throw error;
     }
   },
 
