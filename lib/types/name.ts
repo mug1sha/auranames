@@ -1,5 +1,6 @@
 export interface StandardName {
   name: string;
+  meaning?: string;
 }
 
 export interface RecommendedName {

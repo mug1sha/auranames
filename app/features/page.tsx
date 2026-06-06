@@ -41,6 +41,11 @@ const staggerContainer = {
   viewport: { once: true }
 }
 
+/**
+ * Renders the Features marketing page for AuraNames, including the animated hero, seven feature sections, a comparison table, and final CTA with Navbar and Footer.
+ *
+ * @returns The page's JSX element.
+ */
 export default function FeaturesPage() {
   return (
     <main className="min-h-screen bg-background selection:bg-gold/30">

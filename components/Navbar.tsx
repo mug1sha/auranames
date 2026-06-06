@@ -4,6 +4,13 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-
 import Link from "next/link"
 import { useState } from "react"
 
+/**
+ * Renders the site navigation bar including logo, desktop links and CTA, decorative motion elements, and a full-screen mobile menu.
+ *
+ * The navbar automatically hides when the user scrolls downward past 150px and reappears when scrolling up. On small screens it exposes a toggleable full-screen menu; clicking a mobile link closes that menu.
+ *
+ * @returns A JSX element representing the navigation bar.
+ */
 export function Navbar() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [hidden, setHidden] = useState(false)
@@ -48,8 +55,8 @@ export function Navbar() {
             {/* Logo Section */}
             <Link href="/" className="flex items-center gap-2 md:gap-3 group pr-1 md:pr-2 shrink-0">
               <div className="flex flex-col">
-                <span className="text-base md:text-lg font-bold text-foreground leading-none tracking-tight">
-                  <span className="gradient-text">Aura</span>Names
+                <span className="text-base md:text-lg font-bold leading-none tracking-tight">
+                  <span className="gradient-text">Aura</span><span className="text-white">Names</span>
                 </span>
                 <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.25em] font-medium text-gold/60">AI Powered</span>
               </div>
@@ -85,45 +92,49 @@ export function Navbar() {
             </div>
 
             {/* CTA Button - Desktop only */}
-            <motion.button
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ duration: 0.2 }}
-              className="navbar-cta-button group relative hidden md:block"
-            >
-              <span className="relative z-10 flex items-center gap-2 font-bold" style={{ color: "#0A192F" }}>
-                <span>Get Started</span>
-                <motion.svg 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="#0A192F"
-                  strokeWidth={2.5}
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </motion.svg>
-              </span>
-              <motion.div className="absolute inset-0 rounded-xl overflow-hidden" style={{ pointerEvents: "none" }}>
-                <motion.div 
-                  className="absolute inset-0 -skew-x-12"
-                  style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)", width: "50%" }}
-                  animate={{ x: ["-100%", "300%"] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
-                />
-              </motion.div>
-            </motion.button>
+            <Link href="/auth">
+              <motion.button
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.2 }}
+                className="navbar-cta-button group relative hidden md:block"
+              >
+                <span className="relative z-10 flex items-center gap-2 font-bold" style={{ color: "#0A192F" }}>
+                  <span>Get Started</span>
+                  <motion.svg 
+                    className="w-4 h-4" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="#0A192F"
+                    strokeWidth={2.5}
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </motion.svg>
+                </span>
+                <motion.div className="absolute inset-0 rounded-xl overflow-hidden" style={{ pointerEvents: "none" }}>
+                  <motion.div 
+                    className="absolute inset-0 -skew-x-12"
+                    style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)", width: "50%" }}
+                    animate={{ x: ["-100%", "300%"] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
+                  />
+                </motion.div>
+              </motion.button>
+            </Link>
 
             {/* Mobile Actions: CTA + Menu */}
             <div className="flex items-center gap-2 md:hidden">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 clay-button-gold text-xs font-bold"
-                style={{ color: "#0A192F", borderRadius: "10px" }}
-              >
-                Start
-              </motion.button>
+              <Link href="/auth">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 clay-button-gold text-xs font-bold"
+                  style={{ color: "#0A192F", borderRadius: "10px" }}
+                >
+                  Start
+                </motion.button>
+              </Link>
               
               <motion.button
                 whileTap={{ scale: 0.95 }}

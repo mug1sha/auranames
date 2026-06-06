@@ -35,6 +35,12 @@ const staggerContainer = {
   viewport: { once: true }
 }
 
+/**
+ * Renders the About page for AuraNames, including the animated hero, story, mission,
+ * features, audience, values, CTA, navbar, and footer sections.
+ *
+ * @returns The JSX element for the About page layout.
+ */
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-background selection:bg-gold/30">
