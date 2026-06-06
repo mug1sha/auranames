@@ -311,7 +311,7 @@ export default function PlaygroundPage() {
                   type="text"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  disabled={!activeSessionId || isGenerating}
+                  disabled={isGenerating}
                   className="w-full bg-transparent border-none outline-none text-foreground text-sm md:text-base pr-4 relative z-10 disabled:opacity-50"
                 />
               </div>

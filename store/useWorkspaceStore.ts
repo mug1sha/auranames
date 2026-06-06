@@ -12,7 +12,8 @@ import {
   getDoc,
   deleteDoc,
   serverTimestamp,
-  arrayUnion
+  arrayUnion,
+  limit
 } from 'firebase/firestore';
 
 export interface Result {
@@ -123,7 +124,8 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     const q = query(
       collection(db, "sessions"),
       where("userId", "==", userId),
-      orderBy("lastUpdated", "desc")
+      orderBy("lastUpdated", "desc"),
+      limit(15)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
