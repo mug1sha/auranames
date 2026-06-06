@@ -40,6 +40,12 @@ interface WorkspaceState {
   sessions: Session[];
   activeSessionId: string | null;
   favorites: string[];
+  settings: {
+    cloudSync: boolean;
+    usageStats: boolean;
+    notifications: boolean;
+    darkMode: boolean;
+  };
   loading: boolean;
   
   // Actions
@@ -50,13 +56,41 @@ interface WorkspaceState {
   deleteSession: (sessionId: string) => Promise<void>;
   toggleFavorite: (name: string) => void;
   fetchSessions: (userId: string) => () => void;
+  saveSettings: (settings: WorkspaceState['settings']) => Promise<void>;
 }
 
 export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   sessions: [],
   activeSessionId: null,
   favorites: [],
+  settings: {
+    cloudSync: true,
+    usageStats: false,
+    notifications: true,
+    darkMode: true
+  },
   loading: true,
+
+  // ... (previous actions)
+
+  saveSettings: async (settings) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, { settings });
+      set({ settings });
+    } catch (error) {
+      // If user doc doesn't exist, create it
+      const user = auth.currentUser;
+      if (user) {
+        const { setDoc } = await import('firebase/firestore');
+        await setDoc(doc(db, "users", user.uid), { settings }, { merge: true });
+        set({ settings });
+      }
+    }
+  },
 
   createSession: async (title = "New Workspace") => {
     try {

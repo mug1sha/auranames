@@ -56,6 +56,9 @@ export default function PlaygroundLayout({
     darkMode: true
   })
 
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+
   useEffect(() => {
     if (user) {
       const unsubscribe = fetchSessions(user.uid)
@@ -91,6 +94,21 @@ export default function PlaygroundLayout({
 
   const toggleSetting = (key: keyof typeof settingsState) => {
     setSettingsState(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const handleSaveSettings = async () => {
+    setIsSaving(true)
+    setSaveSuccess(false)
+    
+    try {
+      await useWorkspaceStore.getState().saveSettings(settingsState)
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 3000)
+    } catch (error) {
+      console.error("Save failed:", error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -503,8 +521,29 @@ export default function PlaygroundLayout({
                     </div>
                     
                     <div className="mt-8 pt-6 border-t border-gold/10 flex justify-end gap-3 shrink-0">
-                      <button onClick={() => setShowSettings(false)} className="px-6 py-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Close</button>
-                      <button className="px-8 py-2 clay-button-gold text-xs hover:scale-105 transition-transform">Save Changes</button>
+                      <button 
+                        onClick={() => setShowSettings(false)} 
+                        className="px-6 py-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Close
+                      </button>
+                      <button 
+                        onClick={handleSaveSettings}
+                        disabled={isSaving}
+                        className={`px-8 py-2 clay-button-gold text-xs hover:scale-105 transition-all flex items-center gap-2 min-w-[140px] justify-center
+                          ${saveSuccess ? 'border-green-500 text-green-600' : ''}`}
+                      >
+                        {isSaving ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : saveSuccess ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            Saved!
+                          </>
+                        ) : (
+                          "Save Changes"
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>
