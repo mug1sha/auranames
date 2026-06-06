@@ -63,9 +63,13 @@ export default function PlaygroundPage() {
     
     // Auto-create session if none active
     let sessionId = activeSessionId
+    let isAutoCreated = false
+    
     if (!sessionId && finalPrompt.trim()) {
       console.log("Playground: No active session, creating one...");
-      sessionId = await useWorkspaceStore.getState().createSession("New Workspace")
+      isAutoCreated = true
+      const initialTitle = finalPrompt.length > 25 ? finalPrompt.substring(0, 25) + "..." : finalPrompt
+      sessionId = await useWorkspaceStore.getState().createSession(initialTitle)
       if (sessionId) {
         useWorkspaceStore.getState().setActiveSession(sessionId)
       } else {
@@ -93,10 +97,13 @@ export default function PlaygroundPage() {
       await addMessage(sessionId, userMsg)
       console.log("Playground: User message added successfully");
 
-      // 2. Update Session Title if it's the first message
-      if (messages.length === 0) {
-        console.log("Playground: Updating session title...");
-        const title = finalPrompt.length > 20 ? finalPrompt.substring(0, 20) + "..." : finalPrompt
+      // 2. Update Session Title if it's an existing empty workspace named "New Workspace"
+      const store = useWorkspaceStore.getState()
+      const currentSession = store.sessions.find(s => s.id === sessionId)
+      
+      if (!isAutoCreated && currentSession && currentSession.title === "New Workspace") {
+        console.log("Playground: Updating existing session title...");
+        const title = finalPrompt.length > 25 ? finalPrompt.substring(0, 25) + "..." : finalPrompt
         await updateSessionTitle(sessionId, title)
       }
 

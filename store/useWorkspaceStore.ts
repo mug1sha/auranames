@@ -156,7 +156,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
     try {
       const sessionRef = doc(db, "sessions", sessionId);
-      await updateDoc(sessionRef, { title });
+      await updateDoc(sessionRef, { 
+        title,
+        lastUpdated: serverTimestamp() 
+      });
     } catch (error) {
       console.error("Error updating session title:", error);
     }
