@@ -45,7 +45,8 @@ export default function PlaygroundLayout({
     loading,
     updateSessionTitle,
     deleteSession,
-    favorites
+    favorites,
+    settings
   } = useWorkspaceStore()
   const { user, setUser } = useAuthStore()
   const router = useRouter()
@@ -55,15 +56,15 @@ export default function PlaygroundLayout({
   const [showFavorites, setShowFavorites] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeSettingsTab, setActiveSettingsTab] = useState<'general' | 'theme' | 'alerts' | 'privacy'>('general')
-  const [settingsState, setSettingsState] = useState({
-    cloudSync: true,
-    usageStats: false,
-    notifications: true,
-    darkMode: true
-  })
+  const [settingsState, setSettingsState] = useState(settings)
 
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+
+  // Sync local settings state when store settings change (loaded from Firestore)
+  useEffect(() => {
+    setSettingsState(settings)
+  }, [settings])
 
   useEffect(() => {
     if (user) {

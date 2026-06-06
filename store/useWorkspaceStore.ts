@@ -182,14 +182,22 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
   fetchSessions: (userId) => {
     set({ loading: true });
-    // Simplify query to only filter by userId to avoid index requirement
-    // Sorting will be handled client-side in the onSnapshot listener
+    
+    // 1. Listen for user settings
+    const userRef = doc(db, "users", userId);
+    const unsubSettings = onSnapshot(userRef, (doc) => {
+      if (doc.exists() && doc.data().settings) {
+        set({ settings: doc.data().settings });
+      }
+    });
+
+    // 2. Listen for sessions
     const q = query(
       collection(db, "sessions"),
       where("userId", "==", userId)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubSessions = onSnapshot(q, (snapshot) => {
       const sessions = snapshot.docs
         .map(doc => ({
           id: doc.id,
@@ -216,6 +224,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       set({ loading: false });
     });
 
-    return unsubscribe;
+    // Return combined unsubscribe
+    return () => {
+      unsubSettings();
+      unsubSessions();
+    };
   },
 }));
