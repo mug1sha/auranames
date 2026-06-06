@@ -48,6 +48,13 @@ export default function PlaygroundLayout({
   const [editTitle, setEditTitle] = useState("")
   const [showSettings, setShowSettings] = useState(false)
   const [showFavorites, setShowFavorites] = useState(false)
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'general' | 'theme' | 'alerts' | 'privacy'>('general')
+  const [settingsState, setSettingsState] = useState({
+    cloudSync: true,
+    usageStats: false,
+    notifications: true,
+    darkMode: true
+  })
 
   useEffect(() => {
     if (user) {
@@ -82,9 +89,13 @@ export default function PlaygroundLayout({
     setEditingId(null)
   }
 
+  const toggleSetting = (key: keyof typeof settingsState) => {
+    setSettingsState(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
   return (
     <div className="flex h-screen bg-background overflow-hidden font-sans">
-      {/* Sidebar */}
+      {/* Sidebar ... */}
       <aside className="w-72 border-r border-gold/10 flex flex-col bg-[#060F1F] z-20">
         <div className="p-6 flex-1 flex flex-col overflow-hidden">
           <div className="flex items-center gap-3 mb-8">
@@ -176,9 +187,10 @@ export default function PlaygroundLayout({
           
           <button 
             onClick={() => setShowSettings(true)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-gold/5 transition-all group"
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group
+              ${showSettings ? 'navbar-link-pill text-gold' : 'text-muted-foreground hover:text-foreground hover:bg-gold/5'}`}
           >
-            <Settings className="w-4 h-4 group-hover:text-gold transition-colors" />
+            <Settings className={`w-4 h-4 ${showSettings ? 'text-gold' : 'group-hover:text-gold'} transition-colors`} />
             <span className="text-sm font-medium">Settings</span>
           </button>
           
@@ -206,14 +218,14 @@ export default function PlaygroundLayout({
 
       {/* Main Content Area */}
       <main className="flex-1 relative flex flex-col overflow-hidden">
-        {/* Background blobs for main area */}
+        {/* Background blobs for main area ... */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/5 rounded-full blur-[120px] opacity-30" />
           <div className="absolute inset-0 gold-dots opacity-10" />
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/10 to-transparent" />
         </div>
         
-        {/* Favorites View Overlay */}
+        {/* Favorites View Overlay ... */}
         <AnimatePresence>
           {showFavorites && (
             <motion.div 
@@ -297,20 +309,36 @@ export default function PlaygroundLayout({
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 className="w-full max-w-2xl navbar-clay-pill overflow-hidden shadow-2xl"
               >
-                <div className="flex h-[500px]">
+                <div className="flex h-[550px]">
                   {/* Settings Nav */}
                   <div className="w-48 border-r border-gold/10 bg-[#060F1F]/50 p-6 flex flex-col gap-2">
                     <h3 className="text-xs font-black uppercase tracking-widest text-gold/50 mb-4 px-2">Settings</h3>
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-gold/10 text-gold text-sm font-bold border border-gold/20">
+                    <button 
+                      onClick={() => setActiveSettingsTab('general')}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
+                        ${activeSettingsTab === 'general' ? 'bg-gold/10 text-gold border border-gold/20' : 'text-muted-foreground hover:text-foreground hover:bg-gold/5'}`}
+                    >
                       <User className="w-4 h-4" /> General
                     </button>
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gold/5 text-sm font-medium transition-all">
+                    <button 
+                      onClick={() => setActiveSettingsTab('theme')}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
+                        ${activeSettingsTab === 'theme' ? 'bg-gold/10 text-gold border border-gold/20' : 'text-muted-foreground hover:text-foreground hover:bg-gold/5'}`}
+                    >
                       <Palette className="w-4 h-4" /> Theme
                     </button>
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gold/5 text-sm font-medium transition-all">
+                    <button 
+                      onClick={() => setActiveSettingsTab('alerts')}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
+                        ${activeSettingsTab === 'alerts' ? 'bg-gold/10 text-gold border border-gold/20' : 'text-muted-foreground hover:text-foreground hover:bg-gold/5'}`}
+                    >
                       <Bell className="w-4 h-4" /> Alerts
                     </button>
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gold/5 text-sm font-medium transition-all">
+                    <button 
+                      onClick={() => setActiveSettingsTab('privacy')}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
+                        ${activeSettingsTab === 'privacy' ? 'bg-gold/10 text-gold border border-gold/20' : 'text-muted-foreground hover:text-foreground hover:bg-gold/5'}`}
+                    >
                       <Shield className="w-4 h-4" /> Privacy
                     </button>
                   </div>
@@ -319,66 +347,164 @@ export default function PlaygroundLayout({
                   <div className="flex-1 p-8 relative flex flex-col overflow-hidden">
                     <button 
                       onClick={() => setShowSettings(false)}
-                      className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors z-10"
                     >
                       <X className="w-5 h-5" />
                     </button>
 
                     <div className="flex-1 overflow-y-auto no-scrollbar pr-2">
-                      <h2 className="text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground mb-8">General Preferences</h2>
-                      
-                      <div className="space-y-8">
-                        {/* Profile Section */}
-                        <section>
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-4">Account Profile</label>
-                          <div className="flex items-center gap-4 p-4 clay-surface-sm border-gold/10">
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/30 to-gold-dark/20 flex items-center justify-center border-2 border-gold/30 glow-gold-sm">
-                              <User className="w-8 h-8 text-gold" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-lg font-bold text-foreground truncate">{user?.email || 'User Profile'}</div>
-                              <div className="text-xs text-gold font-bold">Aura Pro Member • Since 2026</div>
-                            </div>
-                            <button className="px-4 py-2 clay-button text-xs font-bold">Edit</button>
-                          </div>
-                        </section>
+                      <AnimatePresence mode="wait">
+                        {activeSettingsTab === 'general' && (
+                          <motion.div
+                            key="general"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="space-y-8"
+                          >
+                            <h2 className="text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground mb-8">General Preferences</h2>
+                            
+                            <section>
+                              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-4">Account Profile</label>
+                              <div className="flex items-center gap-4 p-4 clay-surface-sm border-gold/10">
+                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/30 to-gold-dark/20 flex items-center justify-center border-2 border-gold/30 glow-gold-sm">
+                                  <User className="w-8 h-8 text-gold" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-lg font-bold text-foreground truncate">{user?.email || 'User Profile'}</div>
+                                  <div className="text-xs text-gold font-bold">Aura Pro Member • Since 2026</div>
+                                </div>
+                                <button className="px-4 py-2 clay-button text-xs font-bold hover:glow-border-gold transition-all">Edit</button>
+                              </div>
+                            </section>
 
-                        {/* Language Section */}
-                        <section>
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">AI Model</label>
-                          <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
-                            <div className="flex items-center gap-3">
-                              <Sparkles className="w-4 h-4 text-gold" />
-                              <span className="text-sm font-medium text-foreground">GPT-4o (Aura Optimized)</span>
-                            </div>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/20 text-gold font-black uppercase tracking-tighter">Current</span>
-                          </div>
-                        </section>
+                            <section>
+                              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">AI Model</label>
+                              <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
+                                <div className="flex items-center gap-3">
+                                  <Sparkles className="w-4 h-4 text-gold" />
+                                  <span className="text-sm font-medium text-foreground">GPT-4o (Aura Optimized)</span>
+                                </div>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/20 text-gold font-black uppercase tracking-tighter">Current</span>
+                              </div>
+                            </section>
 
-                        {/* Preferences */}
-                        <section>
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Workspace Data</label>
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
-                              <span className="text-sm font-medium text-foreground">Cloud Sync</span>
-                              <div className="w-10 h-5 bg-gold rounded-full relative">
-                                <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-[#0A192F] rounded-full shadow-lg" />
+                            <section>
+                              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Workspace Data</label>
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
+                                  <span className="text-sm font-medium text-foreground">Cloud Sync</span>
+                                  <button 
+                                    onClick={() => toggleSetting('cloudSync')}
+                                    className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${settingsState.cloudSync ? 'bg-gold' : 'bg-gold/10 border border-gold/20'}`}
+                                  >
+                                    <motion.div 
+                                      animate={{ x: settingsState.cloudSync ? 20 : 2 }}
+                                      className={`absolute top-0.5 w-4 h-4 rounded-full shadow-lg ${settingsState.cloudSync ? 'bg-[#0A192F]' : 'bg-muted-foreground'}`} 
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                            </section>
+                          </motion.div>
+                        )}
+
+                        {activeSettingsTab === 'theme' && (
+                          <motion.div
+                            key="theme"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="space-y-8"
+                          >
+                            <h2 className="text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground mb-8">Visual Experience</h2>
+                            <section>
+                              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-4">Display Mode</label>
+                              <div className="grid grid-cols-2 gap-4">
+                                <button 
+                                  onClick={() => setSettingsState(s => ({...s, darkMode: true}))}
+                                  className={`p-6 clay-surface-sm border-2 transition-all text-center
+                                    ${settingsState.darkMode ? 'border-gold glow-gold-sm' : 'border-transparent opacity-50'}`}
+                                >
+                                  <div className="w-8 h-8 mx-auto mb-3 bg-[#0A192F] rounded-full border border-gold/20" />
+                                  <span className="text-sm font-bold text-foreground">Midnight (Dark)</span>
+                                </button>
+                                <button 
+                                  onClick={() => setSettingsState(s => ({...s, darkMode: false}))}
+                                  className={`p-6 clay-surface-sm border-2 transition-all text-center
+                                    ${!settingsState.darkMode ? 'border-gold glow-gold-sm' : 'border-transparent opacity-50'}`}
+                                >
+                                  <div className="w-8 h-8 mx-auto mb-3 bg-white rounded-full border border-gray-200" />
+                                  <span className="text-sm font-bold text-foreground">Daylight (Light)</span>
+                                </button>
+                              </div>
+                            </section>
+                          </motion.div>
+                        )}
+
+                        {activeSettingsTab === 'alerts' && (
+                          <motion.div
+                            key="alerts"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="space-y-8"
+                          >
+                            <h2 className="text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground mb-8">Notifications</h2>
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-bold text-foreground">Browser Notifications</span>
+                                  <span className="text-xs text-muted-foreground">Alert me when names are ready</span>
+                                </div>
+                                <button 
+                                  onClick={() => toggleSetting('notifications')}
+                                  className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${settingsState.notifications ? 'bg-gold' : 'bg-gold/10 border border-gold/20'}`}
+                                >
+                                  <motion.div 
+                                    animate={{ x: settingsState.notifications ? 20 : 2 }}
+                                    className={`absolute top-0.5 w-4 h-4 rounded-full shadow-lg ${settingsState.notifications ? 'bg-[#0A192F]' : 'bg-muted-foreground'}`} 
+                                  />
+                                </button>
                               </div>
                             </div>
-                            <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
-                              <span className="text-sm font-medium text-foreground">Usage Statistics</span>
-                              <div className="w-10 h-5 bg-gold/20 rounded-full relative border border-gold/20">
-                                <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-muted-foreground/50 rounded-full" />
+                          </motion.div>
+                        )}
+
+                        {activeSettingsTab === 'privacy' && (
+                          <motion.div
+                            key="privacy"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="space-y-8"
+                          >
+                            <h2 className="text-2xl font-bold font-[family-name:var(--font-playfair)] text-foreground mb-8">Privacy & Security</h2>
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between p-4 clay-surface-sm border-gold/10">
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-bold text-foreground">Usage Analytics</span>
+                                  <span className="text-xs text-muted-foreground">Help us improve by sharing data</span>
+                                </div>
+                                <button 
+                                  onClick={() => toggleSetting('usageStats')}
+                                  className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${settingsState.usageStats ? 'bg-gold' : 'bg-gold/10 border border-gold/20'}`}
+                                >
+                                  <motion.div 
+                                    animate={{ x: settingsState.usageStats ? 20 : 2 }}
+                                    className={`absolute top-0.5 w-4 h-4 rounded-full shadow-lg ${settingsState.usageStats ? 'bg-[#0A192F]' : 'bg-muted-foreground'}`} 
+                                  />
+                                </button>
                               </div>
                             </div>
-                          </div>
-                        </section>
-                      </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                     
-                    <div className="mt-8 pt-6 border-t border-gold/10 flex justify-end gap-3">
+                    <div className="mt-8 pt-6 border-t border-gold/10 flex justify-end gap-3 shrink-0">
                       <button onClick={() => setShowSettings(false)} className="px-6 py-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">Close</button>
-                      <button className="px-8 py-2 clay-button-gold text-xs">Save Changes</button>
+                      <button className="px-8 py-2 clay-button-gold text-xs hover:scale-105 transition-transform">Save Changes</button>
                     </div>
                   </div>
                 </div>
