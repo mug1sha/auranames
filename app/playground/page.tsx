@@ -60,9 +60,22 @@ export default function PlaygroundPage() {
   const handleGenerate = async (e?: React.FormEvent, overridePrompt?: string) => {
     if (e) e.preventDefault()
     const finalPrompt = overridePrompt || prompt
-    console.log("Playground: handleGenerate started", { finalPrompt, activeSessionId });
-    if (!finalPrompt.trim() || !activeSessionId) {
-      console.warn("Playground: Missing prompt or activeSessionId");
+    
+    // Auto-create session if none active
+    let sessionId = activeSessionId
+    if (!sessionId && finalPrompt.trim()) {
+      console.log("Playground: No active session, creating one...");
+      sessionId = await useWorkspaceStore.getState().createSession("New Workspace")
+      if (sessionId) {
+        useWorkspaceStore.getState().setActiveSession(sessionId)
+      } else {
+        console.error("Playground: Failed to auto-create session")
+        return
+      }
+    }
+
+    if (!finalPrompt.trim() || !sessionId) {
+      console.warn("Playground: Missing prompt or sessionId");
       return;
     }
 
@@ -71,13 +84,13 @@ export default function PlaygroundPage() {
 
     try {
       // 1. Add User Message
-      console.log("Playground: Adding user message...");
+      console.log("Playground: Adding user message to session:", sessionId);
       const userMsg: Message = {
         role: 'user',
         content: finalPrompt,
         timestamp: Date.now()
       }
-      await addMessage(activeSessionId, userMsg)
+      await addMessage(sessionId, userMsg)
       console.log("Playground: User message added successfully");
 
       // 2. Update Session Title if it's the first message
@@ -320,9 +333,9 @@ export default function PlaygroundPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 type="submit"
-                disabled={!prompt.trim() || isGenerating || !activeSessionId}
+                disabled={!prompt.trim() || isGenerating}
                 className={`p-3 rounded-xl flex items-center justify-center transition-all
-                  ${prompt.trim() && !isGenerating && activeSessionId
+                  ${prompt.trim() && !isGenerating 
                     ? 'clay-button-gold text-[#0A192F]' 
                     : 'bg-gold/5 text-gold/30 border border-gold/5'
                   }`}
