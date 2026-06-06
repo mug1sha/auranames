@@ -131,6 +131,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setActiveSession: (id) => set({ activeSessionId: id }),
 
   addMessage: async (sessionId, message) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("addMessage failed: No user authenticated");
+      return;
+    }
     if (!sessionId) {
       console.error("addMessage failed: sessionId is null");
       return;
@@ -148,6 +153,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   updateSessionTitle: async (sessionId, title) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("updateSessionTitle failed: No user authenticated");
+      return;
+    }
     if (!sessionId) {
       console.error("updateSessionTitle failed: sessionId is null");
       return;
@@ -164,6 +174,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   deleteSession: async (sessionId) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("deleteSession failed: No user authenticated");
+      return;
+    }
     try {
       await deleteDoc(doc(db, "sessions", sessionId));
       if (get().activeSessionId === sessionId) {
