@@ -113,7 +113,7 @@ export default function AboutPage() {
             <h2 className="text-sm font-black text-primary uppercase tracking-[0.3em] mb-8">Why AuraNames Exists</h2>
             <div className="space-y-6 text-xl md:text-2xl text-foreground font-medium leading-relaxed">
               <p>Finding the perfect name is one of the hardest parts of creating something new.</p>
-              <p>Whether you're launching a startup, naming a product, welcoming a pet, or choosing a name for a child, the right name creates identity, emotion, and recognition.</p>
+              <p>Whether you&apos;re launching a startup, naming a product, welcoming a pet, or choosing a name for a child, the right name creates identity, emotion, and recognition.</p>
               <p className="text-muted-foreground">AuraNames was created to make that process easier through intelligent AI-powered creativity.</p>
             </div>
           </motion.div>
@@ -184,7 +184,7 @@ export default function AboutPage() {
             {...fadeInUp}
             className="text-4xl md:text-5xl font-bold text-center mb-20 font-[family-name:var(--font-playfair)]"
           >
-            Who It's For
+            Who It&apos;s For
           </motion.h2>
           
           <motion.div 

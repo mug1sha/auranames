@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { useWorkspaceStore, Result, Message } from "@/store/useWorkspaceStore"
 import { 
   Sparkles, 
@@ -35,8 +35,8 @@ export default function PlaygroundPage() {
   const [copiedName, setCopiedName] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const activeSession = sessions.find(s => s.id === activeSessionId)
-  const messages = activeSession?.messages || []
+  const activeSession = useMemo(() => sessions.find(s => s.id === activeSessionId), [sessions, activeSessionId])
+  const messages = useMemo(() => activeSession?.messages || [], [activeSession])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -260,7 +260,7 @@ export default function PlaygroundPage() {
                               </div>
                             </div>
                             
-                            <p className="text-sm text-muted-foreground mb-6 flex-1 italic">"{res.meaning}"</p>
+                            <p className="text-sm text-muted-foreground mb-6 flex-1 italic">&quot;{res.meaning}&quot;</p>
                             
                             <div className="space-y-3 mt-auto">
                               <div className="flex items-center justify-between text-xs">
