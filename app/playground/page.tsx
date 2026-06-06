@@ -216,7 +216,7 @@ export default function PlaygroundPage() {
             </div>
           ) : (
             /* Conversation Thread */
-            <div className="space-y-12 pb-24">
+            <div className="space-y-12 pb-32 md:pb-24">
               {messages.map((msg, idx) => (
                 <motion.div
                   key={idx}
@@ -305,7 +305,7 @@ export default function PlaygroundPage() {
       </div>
 
       {/* Input Area - Fixed at bottom */}
-      <div className="p-6 md:p-10 bg-gradient-to-t from-background via-background/90 to-transparent">
+      <div className="px-4 pb-10 pt-6 md:px-10 md:pb-10 md:pt-10 bg-gradient-to-t from-background via-background/90 to-transparent">
         <div className="max-w-3xl mx-auto w-full">
           <form onSubmit={handleGenerate} className="relative group">
             <div className="navbar-clay-pill p-1.5 flex items-center gap-2 group-focus-within:border-gold/30 transition-all shadow-2xl">
