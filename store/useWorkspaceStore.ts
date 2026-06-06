@@ -78,19 +78,34 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     const user = auth.currentUser;
     if (!user) {
       console.error("Save settings failed: No user authenticated");
-      return;
+      throw new Error("You must be logged in to save settings.");
     }
 
+    // Create a promise that rejects after 10 seconds as a fail-safe
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("Firestore operation timed out")), 10000)
+    );
+
     try {
+      console.log("Saving settings for user:", user.uid);
       const userRef = doc(db, "users", user.uid);
-      await setDoc(userRef, { 
-        settings,
-        lastUpdated: serverTimestamp()
-      }, { merge: true });
+      
+      // Race the actual save against the timeout
+      await Promise.race([
+        setDoc(userRef, { 
+          settings,
+          lastUpdated: serverTimestamp()
+        }, { merge: true }),
+        timeoutPromise
+      ]);
       
       set({ settings });
-    } catch (error) {
-      console.error("Error persisting settings to Firestore:", error);
+      console.log("Settings saved successfully");
+    } catch (error: any) {
+      console.error("Critical error in saveSettings:", error.message);
+      if (error.message?.includes("permission-denied")) {
+        console.error("Check your Firestore Security Rules!");
+      }
       throw error;
     }
   },

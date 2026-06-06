@@ -104,8 +104,9 @@ export default function PlaygroundLayout({
       await useWorkspaceStore.getState().saveSettings(settingsState)
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save failed:", error)
+      alert(`Save failed: ${error.message}. If this persists, please check your network or Firestore rules.`)
     } finally {
       setIsSaving(false)
     }
