@@ -11,7 +11,8 @@ import {
   deleteDoc,
   serverTimestamp,
   arrayUnion,
-  setDoc
+  setDoc,
+  Timestamp
 } from 'firebase/firestore';
 
 export interface Result {
@@ -30,7 +31,7 @@ export interface Message {
 export interface Session {
   id: string;
   title: string;
-  lastUpdated: any;
+  lastUpdated: Timestamp | null;
   messages: Message[];
 }
 
