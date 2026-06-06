@@ -53,7 +53,7 @@ interface WorkspaceState {
   addMessage: (sessionId: string, message: Message) => Promise<void>;
   updateSessionTitle: (sessionId: string, title: string) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
-  toggleFavorite: (name: string) => void;
+  toggleFavorite: (name: string) => Promise<void>;
   fetchSessions: (userId: string) => () => void;
   saveSettings: (settings: WorkspaceState['settings']) => Promise<void>;
 }
@@ -189,20 +189,38 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
 
-  toggleFavorite: (name) => set((state) => ({
-    favorites: state.favorites.includes(name) 
-      ? state.favorites.filter(f => f !== name)
-      : [...state.favorites, name]
-  })),
+  toggleFavorite: async (name) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const currentFavorites = get().favorites;
+    const newFavorites = currentFavorites.includes(name)
+      ? currentFavorites.filter(f => f !== name)
+      : [...currentFavorites, name];
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { 
+        favorites: newFavorites,
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+      
+      // Note: set({ favorites: newFavorites }) is handled by onSnapshot in fetchSessions
+    } catch (error) {
+      console.error("Error toggling favorite in Firestore:", error);
+    }
+  },
 
   fetchSessions: (userId) => {
     set({ loading: true });
     
-    // 1. Listen for user settings
+    // 1. Listen for user profile (settings and favorites)
     const userRef = doc(db, "users", userId);
-    const unsubSettings = onSnapshot(userRef, (doc) => {
-      if (doc.exists() && doc.data().settings) {
-        set({ settings: doc.data().settings });
+    const unsubProfile = onSnapshot(userRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        if (data.settings) set({ settings: data.settings });
+        if (data.favorites) set({ favorites: data.favorites });
       }
     });
 
@@ -241,7 +259,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
     // Return combined unsubscribe
     return () => {
-      unsubSettings();
+      unsubProfile();
       unsubSessions();
     };
   },
