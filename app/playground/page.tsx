@@ -60,27 +60,35 @@ export default function PlaygroundPage() {
   const handleGenerate = async (e?: React.FormEvent, overridePrompt?: string) => {
     if (e) e.preventDefault()
     const finalPrompt = overridePrompt || prompt
-    if (!finalPrompt.trim() || !activeSessionId) return
+    console.log("Playground: handleGenerate started", { finalPrompt, activeSessionId });
+    if (!finalPrompt.trim() || !activeSessionId) {
+      console.warn("Playground: Missing prompt or activeSessionId");
+      return;
+    }
 
     setPrompt("")
     setIsGenerating(true)
 
     try {
       // 1. Add User Message
+      console.log("Playground: Adding user message...");
       const userMsg: Message = {
         role: 'user',
         content: finalPrompt,
         timestamp: Date.now()
       }
       await addMessage(activeSessionId, userMsg)
+      console.log("Playground: User message added successfully");
 
       // 2. Update Session Title if it's the first message
       if (messages.length === 0) {
+        console.log("Playground: Updating session title...");
         const title = finalPrompt.length > 20 ? finalPrompt.substring(0, 20) + "..." : finalPrompt
         await updateSessionTitle(activeSessionId, title)
       }
 
       // 3. Call Real AI API
+      console.log("Playground: Calling /api/generate...");
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -91,19 +99,22 @@ export default function PlaygroundPage() {
         }),
       });
 
+      console.log("Playground: API response received", { status: response.status });
       const data = await response.json();
+      console.log("Playground: API data parsed", data);
       
       if (!response.ok) throw new Error(data.error || "Generation failed");
 
       // 4. Map API results to Playground format
+      console.log("Playground: Mapping results...");
       const apiResults: Result[] = [
-        ...data.curatedNames.map((n: any) => ({
+        ...(data.curatedNames || []).map((n: any) => ({
           name: n.name,
           meaning: n.meaning || "A sophisticated name for your brand.",
           score: Math.floor(Math.random() * 15) + 85, // Mock score if API doesn't provide
           domain: "available"
         })),
-        ...data.recommendedNames.map((n: any) => ({
+        ...(data.recommendedNames || []).map((n: any) => ({
           name: n.name,
           meaning: n.definition || "Premium brand identity.",
           score: Math.floor(Math.random() * 10) + 90,
@@ -111,12 +122,14 @@ export default function PlaygroundPage() {
         }))
       ];
       
+      console.log("Playground: Adding assistant message...", apiResults);
       const assistantMsg: Message = {
         role: 'assistant',
         content: apiResults,
         timestamp: Date.now()
       }
       await addMessage(activeSessionId, assistantMsg)
+      console.log("Playground: Assistant message added successfully");
     } catch (error: any) {
       console.error("Playground error:", error);
       // Add error message to thread
@@ -127,6 +140,7 @@ export default function PlaygroundPage() {
       }
       await addMessage(activeSessionId, errorMsg)
     } finally {
+      console.log("Playground: handleGenerate finished");
       setIsGenerating(false)
     }
   }
