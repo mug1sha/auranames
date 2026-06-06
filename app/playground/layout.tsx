@@ -64,6 +64,7 @@ export default function PlaygroundLayout({
 
   // Sync local settings state when store settings change (loaded from Firestore)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSettingsState(settings)
   }, [settings])
 
