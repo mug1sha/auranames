@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, setLogLevel } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -20,5 +20,10 @@ const app = getApps().length > 0 ? getApp() : (isFirebaseConfigured ? initialize
 const auth = app ? getAuth(app) : ({} as any);
 const db = app ? getFirestore(app) : ({} as any);
 const storage = app ? getStorage(app) : ({} as any);
+
+// Enable debug logging to diagnose connection issues
+if (typeof window !== "undefined" && isFirebaseConfigured) {
+  setLogLevel('debug');
+}
 
 export { app, auth, db, storage, isFirebaseConfigured };
