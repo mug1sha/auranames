@@ -131,9 +131,9 @@ export default function AdminPaymentsPage() {
   }
 
   const filteredPayments = payments.filter(p => 
-    p.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.txHash?.toLowerCase().includes(searchTerm.toLowerCase())
+    (p.reference?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (p.userEmail?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (p.txHash?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -196,7 +196,7 @@ export default function AdminPaymentsPage() {
                           {payment.status}
                         </div>
                         <span className="text-[10px] text-muted-foreground uppercase font-bold">
-                          {payment.createdAt?.toDate().toLocaleString()}
+                          {payment.createdAt?.toDate?.()?.toLocaleString() || 'Date Unknown'}
                         </span>
                       </div>
 
