@@ -3,7 +3,7 @@ export const PAYMENT_METHODS = {
     name: "USDT (TRC20)",
     network: process.env.NEXT_PUBLIC_USDT_NETWORK || "TRC20",
     symbol: process.env.NEXT_PUBLIC_USDT_SYMBOL || "USDT",
-    address: process.env.NEXT_PUBLIC_USDT_RECEIVING_ADDRESS || "TYourWalletAddressHere", // Use public for client if needed, but safer to pass from server or use a public env var if it's meant to be seen
+    address: process.env.NEXT_PUBLIC_USDT_RECEIVING_ADDRESS ?? "",
   }
 }
 
