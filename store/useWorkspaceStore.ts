@@ -35,6 +35,14 @@ export interface Session {
   messages: Message[];
 }
 
+export interface Subscription {
+  plan: "starter" | "pro" | "business" | "none";
+  status: "active" | "inactive";
+  startDate: Timestamp | null;
+  endDate: Timestamp | null;
+  transactionId: string | null;
+}
+
 interface WorkspaceState {
   sessions: Session[];
   activeSessionId: string | null;
@@ -45,8 +53,9 @@ interface WorkspaceState {
     notifications: boolean;
     darkMode: boolean;
   };
+  subscription: Subscription;
   loading: boolean;
-  
+
   // Actions
   createSession: (title?: string) => Promise<string>;
   setActiveSession: (id: string) => void;
@@ -68,7 +77,15 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     notifications: true,
     darkMode: true
   },
+  subscription: {
+    plan: "none",
+    status: "inactive",
+    startDate: null,
+    endDate: null,
+    transactionId: null
+  },
   loading: true,
+
 
   // ... (previous actions)
 
@@ -214,13 +231,27 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   fetchSessions: (userId) => {
     set({ loading: true });
     
-    // 1. Listen for user profile (settings and favorites)
+    // 1. Listen for user profile (settings, favorites, and subscription)
     const userRef = doc(db, "users", userId);
     const unsubProfile = onSnapshot(userRef, (doc) => {
       if (doc.exists()) {
         const data = doc.data();
         if (data.settings) set({ settings: data.settings });
         if (data.favorites) set({ favorites: data.favorites });
+        if (data.subscription) {
+          set({ subscription: data.subscription });
+        } else {
+          // Default inactive subscription if none exists
+          set({ 
+            subscription: {
+              plan: "none",
+              status: "inactive",
+              startDate: null,
+              endDate: null,
+              transactionId: null
+            }
+          });
+        }
       }
     });
 

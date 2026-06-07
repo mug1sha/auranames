@@ -23,20 +23,17 @@ const Footer = () => {
     {
       title: "Product",
       links: [
-        { label: "Generator", href: "/" },
-        { label: "About", href: "/about" },
-        { label: "Pricing", href: "#" },
         { label: "Features", href: "/features" },
-        { label: "API", href: "#" },
+        { label: "Pricing", href: "/pricing" },
+        { label: "Playground", href: "/playground" },
       ],
     },
     {
       title: "Company",
       links: [
-        { label: "About Us", href: "#" },
+        { label: "About", href: "/about" },
+        { label: "Contact", href: "/contact" },
         { label: "Careers", href: "#" },
-        { label: "Blog", href: "#" },
-        { label: "Contact", href: "#" },
       ],
     },
     {
@@ -44,7 +41,6 @@ const Footer = () => {
       links: [
         { label: "Privacy Policy", href: "#" },
         { label: "Terms of Service", href: "#" },
-        { label: "Cookie Policy", href: "#" },
       ],
     },
   ]

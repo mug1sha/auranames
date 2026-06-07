@@ -3,6 +3,7 @@
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { useState } from "react"
+import { useAuthStore } from "@/store/useAuthStore"
 
 /**
  * Renders the site navigation bar including logo, desktop links and CTA, decorative motion elements, and a full-screen mobile menu.
@@ -12,6 +13,7 @@ import { useState } from "react"
  * @returns A JSX element representing the navigation bar.
  */
 export function Navbar() {
+  const { user } = useAuthStore()
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [hidden, setHidden] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -71,10 +73,16 @@ export function Navbar() {
 
             {/* Navigation Links - Desktop only */}
             <div className="hidden md:flex items-center gap-0.5">
-              {["Features", "Generator", "About"].map((item) => (
+              {["Features", "Pricing", "About", "Contact"].map((item) => (
                 <NavLink 
                   key={item}
-                  href={item === "About" ? "/about" : item === "Features" ? "/features" : `/#${item.toLowerCase()}`}
+                  href={
+                    item === "About" ? "/about" : 
+                    item === "Pricing" ? "/pricing" : 
+                    item === "Contact" ? "/contact" : 
+                    item === "Features" ? "/features" : 
+                    `/#${item.toLowerCase()}`
+                  }
                   isHovered={hoveredLink === item}
                   onHover={() => setHoveredLink(item)}
                   onLeave={() => setHoveredLink(null)}
@@ -82,6 +90,15 @@ export function Navbar() {
                   {item}
                 </NavLink>
               ))}
+              
+              <NavLink 
+                href="/auth"
+                isHovered={hoveredLink === "Sign In"}
+                onHover={() => setHoveredLink("Sign In")}
+                onLeave={() => setHoveredLink(null)}
+              >
+                Sign In
+              </NavLink>
             </div>
 
             {/* Ornate Divider with diamond - Desktop only */}
@@ -92,7 +109,7 @@ export function Navbar() {
             </div>
 
             {/* CTA Button - Desktop only */}
-            <Link href="/auth">
+            <Link href={user ? "/playground" : "/auth"}>
               <motion.button
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
@@ -126,13 +143,13 @@ export function Navbar() {
 
             {/* Mobile Actions: CTA + Menu */}
             <div className="flex items-center gap-2 md:hidden">
-              <Link href="/auth">
+              <Link href={user ? "/playground" : "/auth"}>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   className="px-4 py-2 clay-button-gold text-xs font-bold"
                   style={{ color: "#0A192F", borderRadius: "10px" }}
                 >
-                  Start
+                  {user ? "Play" : "Start"}
                 </motion.button>
               </Link>
               
@@ -201,7 +218,7 @@ export function Navbar() {
               <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gold/10 rounded-full blur-[80px]" />
             </div>
 
-            {["Features", "Generator", "About", "Pricing", "API"].map((item, i) => (
+            {["Features", "Pricing", "About", "Contact", "Sign In"].map((item, i) => (
               <motion.div
                 key={item}
                 initial={{ opacity: 0, y: 20 }}
@@ -209,7 +226,14 @@ export function Navbar() {
                 transition={{ delay: i * 0.1 }}
               >
                 <Link
-                  href={item === "About" ? "/about" : item === "Features" ? "/features" : `/#${item.toLowerCase()}`}
+                  href={
+                    item === "About" ? "/about" : 
+                    item === "Pricing" ? "/pricing" : 
+                    item === "Contact" ? "/contact" : 
+                    item === "Features" ? "/features" : 
+                    item === "Sign In" ? "/auth" :
+                    `/#${item.toLowerCase()}`
+                  }
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-4xl font-bold tracking-tight hover:text-gold transition-colors block text-center font-[family-name:var(--font-playfair)]"
                 >

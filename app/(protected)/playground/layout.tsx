@@ -26,6 +26,8 @@ import {
   ExternalLink
 } from "lucide-react"
 
+import { SubscriptionGuard } from "@/components/SubscriptionGuard"
+
 /**
  * Render the playground layout: a responsive left sidebar for workspace/session management, a main content area, and animated overlays for favorites and settings.
  *
@@ -272,7 +274,9 @@ export default function PlaygroundLayout({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-foreground truncate">{user?.email?.split('@')[0] || 'User'}</div>
-                <div className="text-[9px] uppercase tracking-widest text-gold font-black">Aura Pro</div>
+                <div className="text-[9px] uppercase tracking-widest text-gold font-black">
+                  {subscription.plan === 'none' ? 'Free Member' : `Aura ${subscription.plan}`}
+                </div>
               </div>
             </div>
             
@@ -448,8 +452,12 @@ export default function PlaygroundLayout({
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="text-base md:text-lg font-bold text-foreground truncate">{user?.email || 'User Profile'}</div>
-                                <div className="text-[10px] md:text-xs text-gold font-bold">Aura Pro Member</div>
+                                <div className="text-[10px] md:text-xs text-gold font-bold">
+                                  {subscription.plan === 'none' ? 'Free Member' : `Aura ${subscription.plan} Member`}
+                                  {subscription.startDate && ` • Since ${new Date(subscription.startDate.toMillis()).getFullYear()}`}
+                                </div>
                               </div>
+
                               <button className="px-3 md:px-4 py-2 clay-button text-[10px] md:text-xs font-bold hover:glow-border-gold transition-all">Edit</button>
                             </div>
                           </section>
