@@ -45,5 +45,19 @@ AuraNames uses a manual USDT (TRC20) verification system for MVP launch.
 5.  **Admin**: Verifies the TXID on TronScan and clicks **Approve**.
 6.  **System**: Automatically activates the user's subscription and grants access to premium features.
 
-### Admin Access
-To access the Admin Dashboard, the user's email must be included in the `ADMIN_EMAILS` array in `app/(protected)/admin/payments/page.tsx`.
+### Admin Access (Authorization)
+The Admin Dashboard (`/admin/payments`) is protected by:
+1.  **UI Gating**: User emails must be listed in the `ADMIN_EMAILS` array in `app/(protected)/admin/payments/page.tsx`.
+2.  **Database Security (Crucial)**: Access **MUST** be enforced via **Firestore Security Rules**. The frontend check is easily bypassable; real security resides at the database level.
+
+**Example Firestore Rule for Admin Protection:**
+```javascript
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /payments/{paymentId} {
+      allow read, write: if request.auth != null && 
+        request.auth.token.email in ["admin@auranames.ai", "godson.mugisha2015@gmail.com"];
+    }
+  }
+}
+```
