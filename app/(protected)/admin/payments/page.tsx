@@ -33,6 +33,9 @@ export default function AdminPaymentsPage() {
       }))
       setPayments(p)
       setLoading(false)
+    }, (error) => {
+      console.error("Admin payments listener error:", error)
+      setLoading(false)
     })
 
     return () => unsubscribe()

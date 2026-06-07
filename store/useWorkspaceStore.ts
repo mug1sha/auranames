@@ -253,6 +253,9 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
           });
         }
       }
+    }, (error) => {
+      console.error("User profile listener error:", error);
+      set({ loading: false });
     });
 
     // 2. Listen for sessions
