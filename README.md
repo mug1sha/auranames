@@ -24,10 +24,26 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Learn More
+## Payment System (USDT TRC20)
 
-To learn more, take a look at the following resources:
+AuraNames uses a manual USDT (TRC20) verification system for MVP launch.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+### Setup Instructions
+
+1.  **Environment Variables**: Add the following to your `.env.local`:
+    *   `NEXT_PUBLIC_USDT_NETWORK=TRC20`
+    *   `NEXT_PUBLIC_USDT_SYMBOL=USDT`
+    *   `NEXT_PUBLIC_USDT_RECEIVING_ADDRESS=your_wallet_address`
+2.  **Database**: Ensure the `payments` and `users` collections are initialized in Firestore.
+
+### Workflow
+
+1.  **User**: Selects a plan on the `/pricing` page.
+2.  **User**: Redirected to `/dashboard/billing/payment` where they see the wallet address and unique reference.
+3.  **User**: Sends USDT via TRC20 and submits the Transaction Hash (TXID).
+4.  **Admin**: Reviews the transaction at `/admin/payments`.
+5.  **Admin**: Verifies the TXID on TronScan and clicks **Approve**.
+6.  **System**: Automatically activates the user's subscription and grants access to premium features.
+
+### Admin Access
+To access the Admin Dashboard, the user's email must be included in the `ADMIN_EMAILS` array in `app/(protected)/admin/payments/page.tsx`.

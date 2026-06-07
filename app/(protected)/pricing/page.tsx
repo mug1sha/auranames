@@ -1,14 +1,13 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Check, Sparkles, Zap, Shield, Crown, Loader2 } from "lucide-react"
+import { Check, Sparkles, Zap, Shield, Crown, Loader2, Coins } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useWorkspaceStore } from "@/store/useWorkspaceStore"
-import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3"
 import { useRouter } from "next/navigation"
-import { useState, useCallback } from "react"
+import { useState } from "react"
 
 const plans = [
   {
@@ -64,23 +63,11 @@ interface PlanCardProps {
   plan: typeof plans[0];
   user: any;
   currentPlan: string;
-  loadingPlan: string | null;
-  setLoadingPlan: (id: string | null) => void;
 }
 
-function PlanCard({ plan, user, currentPlan, loadingPlan, setLoadingPlan }: PlanCardProps) {
+function PlanCard({ plan, user, currentPlan }: PlanCardProps) {
   const router = useRouter()
   
-  const handleFlutterPayment = useFlutterwave({
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "FLWPUBK_TEST-9407421111003661100940742-X",
-    tx_ref: "",
-    amount: 0,
-    currency: "USD",
-    payment_options: "card,mobilemoney,ussd",
-    customer: { email: "", phone_number: "", name: "" },
-    customizations: { title: "", description: "", logo: "" },
-  })
-
   const handleAction = () => {
     if (!user) {
       router.push("/auth")
@@ -89,37 +76,8 @@ function PlanCard({ plan, user, currentPlan, loadingPlan, setLoadingPlan }: Plan
 
     if (currentPlan === plan.id) return
 
-    setLoadingPlan(plan.id)
-
-    handleFlutterPayment({
-      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "FLWPUBK_TEST-9407421111003661100940742-X",
-      tx_ref: `aura-${plan.id}-${Date.now()}`,
-      amount: plan.price,
-      currency: "USD",
-      payment_options: "card,mobilemoney,ussd",
-      customer: {
-        email: user?.email || "",
-        phone_number: "",
-        name: user?.displayName || user?.email?.split('@')[0] || "Aura User",
-      },
-      customizations: {
-        title: `AuraNames ${plan.name} Subscription`,
-        description: `Payment for ${plan.name} plan`,
-        logo: "https://auranames.vercel.app/auraname_logo.png",
-      },
-      callback: (response) => {
-        if (response.status === "successful") {
-          router.push(`/payment/success?transaction_id=${response.transaction_id}&plan=${plan.id}`)
-        } else {
-          router.push("/payment/failed")
-        }
-        closePaymentModal()
-        setLoadingPlan(null)
-      },
-      onClose: () => {
-        setLoadingPlan(null)
-      },
-    })
+    // Redirect to USDT payment page
+    router.push(`/dashboard/billing/payment?plan=${plan.id}`)
   }
 
   return (
@@ -166,21 +124,16 @@ function PlanCard({ plan, user, currentPlan, loadingPlan, setLoadingPlan }: Plan
 
       <button
         onClick={handleAction}
-        disabled={loadingPlan !== null}
         className={`w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2
           ${plan.popular 
             ? 'clay-button-gold text-[#0A192F] hover:scale-[1.02]' 
             : 'clay-button text-foreground hover:bg-gold/5'
           }`}
       >
-        {loadingPlan === plan.id ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <>
-            {currentPlan === plan.id ? "Current Plan" : "Upgrade Now"}
-            {currentPlan !== plan.id && <Sparkles className="w-4 h-4" />}
-          </>
-        )}
+        <>
+          {currentPlan === plan.id ? "Current Plan" : "Upgrade with USDT"}
+          {currentPlan !== plan.id && <Coins className="w-4 h-4" />}
+        </>
       </button>
     </motion.div>
   )
@@ -189,7 +142,6 @@ function PlanCard({ plan, user, currentPlan, loadingPlan, setLoadingPlan }: Plan
 export default function PricingPage() {
   const { user } = useAuthStore()
   const { subscription } = useWorkspaceStore()
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -241,8 +193,6 @@ export default function PricingPage() {
                 plan={plan}
                 user={user}
                 currentPlan={subscription.plan}
-                loadingPlan={loadingPlan}
-                setLoadingPlan={setLoadingPlan}
               />
             ))}
           </div>
@@ -254,8 +204,8 @@ export default function PricingPage() {
             className="mt-20 text-center"
           >
             <p className="text-muted-foreground text-sm">
-              Secure payments powered by <strong>Flutterwave</strong>. 
-              Cancel anytime from your account settings.
+              Secure payments powered by <strong>USDT (TRC20)</strong>. 
+              Manual verification usually takes 5-30 minutes.
             </p>
           </motion.div>
         </div>
