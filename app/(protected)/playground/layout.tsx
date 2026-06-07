@@ -45,7 +45,8 @@ export default function PlaygroundLayout({
     loading,
     updateSessionTitle,
     deleteSession,
-    favorites
+    favorites,
+    settings
   } = useWorkspaceStore()
   const { user, setUser } = useAuthStore()
   const router = useRouter()
@@ -55,22 +56,17 @@ export default function PlaygroundLayout({
   const [showFavorites, setShowFavorites] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeSettingsTab, setActiveSettingsTab] = useState<'general' | 'theme' | 'alerts' | 'privacy'>('general')
-  const [settingsState, setSettingsState] = useState({
-    cloudSync: true,
-    usageStats: false,
-    notifications: true,
-    darkMode: true
-  })
+  const [settingsState, setSettingsState] = useState(settings)
 
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [copiedFavorite, setCopiedFavorite] = useState<string | null>(null)
 
+  // Sync local settings state when store settings change (loaded from Firestore)
   useEffect(() => {
-    if (user) {
-      const unsubscribe = fetchSessions(user.uid)
-      return () => unsubscribe()
-    }
-  }, [user, fetchSessions])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSettingsState(settings)
+  }, [settings])
 
   const handleSignOut = async () => {
     await signOut(auth)
@@ -80,7 +76,9 @@ export default function PlaygroundLayout({
 
   const handleNewSession = async () => {
     const id = await createSession()
-    setActiveSession(id)
+    if (id) {
+      setActiveSession(id)
+    }
     setShowFavorites(false)
     setIsSidebarOpen(false)
   }
@@ -118,9 +116,15 @@ export default function PlaygroundLayout({
       setIsSaving(false)
     }
   }
+const handleCopyFavorite = (name: string) => {
+  navigator.clipboard.writeText(name)
+  setCopiedFavorite(name)
+  setTimeout(() => setCopiedFavorite(null), 2000)
+}
 
-  return (
-    <div className="flex h-screen bg-background overflow-hidden font-sans relative">
+return (
+  <div className="flex h-screen bg-background overflow-hidden font-sans relative">
+
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -261,7 +265,9 @@ export default function PlaygroundLayout({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-foreground truncate">{user?.email?.split('@')[0] || 'User'}</div>
-                <div className="text-[9px] uppercase tracking-widest text-gold font-black">Aura Pro</div>
+                <div className="text-[9px] uppercase tracking-widest text-gold font-black">
+                  {subscription.plan === 'none' ? 'Free Member' : `Aura ${subscription.plan}`}
+                </div>
               </div>
             </div>
             
@@ -357,12 +363,15 @@ export default function PlaygroundLayout({
                         </div>
                         <div className="mt-4 flex gap-2">
                           <button 
-                            onClick={() => navigator.clipboard.writeText(name)}
+                            onClick={() => handleCopyFavorite(name)}
                             className="flex-1 py-2 clay-button text-xs font-bold"
                           >
-                            Copy
+                            {copiedFavorite === name ? 'Copied!' : 'Copy'}
                           </button>
-                          <button className="p-2 clay-button">
+                          <button 
+                            onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(name)}`, '_blank')}
+                            className="p-2 clay-button"
+                          >
                             <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
                           </button>
                         </div>
@@ -434,8 +443,12 @@ export default function PlaygroundLayout({
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="text-base md:text-lg font-bold text-foreground truncate">{user?.email || 'User Profile'}</div>
-                                <div className="text-[10px] md:text-xs text-gold font-bold">Aura Pro Member</div>
+                                <div className="text-[10px] md:text-xs text-gold font-bold">
+                                  {subscription.plan === 'none' ? 'Free Member' : `Aura ${subscription.plan} Member`}
+                                  {subscription.startDate && ` • Since ${new Date(subscription.startDate.toMillis()).getFullYear()}`}
+                                </div>
                               </div>
+
                               <button className="px-3 md:px-4 py-2 clay-button text-[10px] md:text-xs font-bold hover:glow-border-gold transition-all">Edit</button>
                             </div>
                           </section>

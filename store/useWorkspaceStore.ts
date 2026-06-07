@@ -8,13 +8,11 @@ import {
   onSnapshot, 
   query, 
   where, 
-  orderBy,
-  getDoc,
   deleteDoc,
   serverTimestamp,
   arrayUnion,
-  limit,
-  setDoc
+  setDoc,
+  Timestamp
 } from 'firebase/firestore';
 
 export interface Result {
@@ -33,8 +31,16 @@ export interface Message {
 export interface Session {
   id: string;
   title: string;
-  lastUpdated: any;
+  lastUpdated: Timestamp | null;
   messages: Message[];
+}
+
+export interface Subscription {
+  plan: "starter" | "pro" | "business" | "none";
+  status: "active" | "inactive";
+  startDate: Timestamp | null;
+  endDate: Timestamp | null;
+  transactionId: string | null;
 }
 
 interface WorkspaceState {
@@ -47,15 +53,16 @@ interface WorkspaceState {
     notifications: boolean;
     darkMode: boolean;
   };
+  subscription: Subscription;
   loading: boolean;
-  
+
   // Actions
   createSession: (title?: string) => Promise<string>;
   setActiveSession: (id: string) => void;
   addMessage: (sessionId: string, message: Message) => Promise<void>;
   updateSessionTitle: (sessionId: string, title: string) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
-  toggleFavorite: (name: string) => void;
+  toggleFavorite: (name: string) => Promise<void>;
   fetchSessions: (userId: string) => () => void;
   saveSettings: (settings: WorkspaceState['settings']) => Promise<void>;
 }
@@ -70,7 +77,15 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     notifications: true,
     darkMode: true
   },
+  subscription: {
+    plan: "none",
+    status: "inactive",
+    startDate: null,
+    endDate: null,
+    transactionId: null
+  },
   loading: true,
+
 
   // ... (previous actions)
 
@@ -133,6 +148,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setActiveSession: (id) => set({ activeSessionId: id }),
 
   addMessage: async (sessionId, message) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("addMessage failed: No user authenticated");
+      return;
+    }
     if (!sessionId) {
       console.error("addMessage failed: sessionId is null");
       return;
@@ -150,6 +170,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   updateSessionTitle: async (sessionId, title) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("updateSessionTitle failed: No user authenticated");
+      return;
+    }
     if (!sessionId) {
       console.error("updateSessionTitle failed: sessionId is null");
       return;
@@ -166,6 +191,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   deleteSession: async (sessionId) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("deleteSession failed: No user authenticated");
+      return;
+    }
     try {
       await deleteDoc(doc(db, "sessions", sessionId));
       if (get().activeSessionId === sessionId) {
@@ -176,22 +206,83 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
 
-  toggleFavorite: (name) => set((state) => ({
-    favorites: state.favorites.includes(name) 
-      ? state.favorites.filter(f => f !== name)
-      : [...state.favorites, name]
-  })),
+  toggleFavorite: async (name) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const currentFavorites = get().favorites;
+    const newFavorites = currentFavorites.includes(name)
+      ? currentFavorites.filter(f => f !== name)
+      : [...currentFavorites, name];
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { 
+        favorites: newFavorites,
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+      
+      // Note: set({ favorites: newFavorites }) is handled by onSnapshot in fetchSessions
+    } catch (error) {
+      console.error("Error toggling favorite in Firestore:", error);
+    }
+  },
 
   fetchSessions: (userId) => {
     set({ loading: true });
-    // Simplify query to only filter by userId to avoid index requirement
-    // Sorting will be handled client-side in the onSnapshot listener
+    
+    // 1. Listen for user profile (settings, favorites, and subscription)
+    const userRef = doc(db, "users", userId);
+    const unsubProfile = onSnapshot(userRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        if (data.settings) set({ settings: data.settings });
+        if (data.favorites) set({ favorites: data.favorites });
+        if (data.subscription) {
+          set({ subscription: data.subscription });
+        } else {
+          // Default inactive subscription if none exists
+          set({ 
+            subscription: {
+              plan: "none",
+              status: "inactive",
+              startDate: null,
+              endDate: null,
+              transactionId: null
+            }
+          });
+        }
+      } else {
+        // Reset to default state if profile doesn't exist
+        set({
+          favorites: [],
+          settings: {
+            cloudSync: true,
+            usageStats: false,
+            notifications: true,
+            darkMode: true
+          },
+          subscription: {
+            plan: "none",
+            status: "inactive",
+            startDate: null,
+            endDate: null,
+            transactionId: null
+          }
+        });
+      }
+    }, (error) => {
+      console.error("User profile listener error:", error);
+      set({ loading: false });
+    });
+
+    // 2. Listen for sessions
     const q = query(
       collection(db, "sessions"),
       where("userId", "==", userId)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubSessions = onSnapshot(q, (snapshot) => {
       const sessions = snapshot.docs
         .map(doc => ({
           id: doc.id,
@@ -215,9 +306,13 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       }
     }, (error) => {
       console.error("Firestore snapshot error:", error);
-      set({ loading: false });
+      set({ sessions: [], loading: false, activeSessionId: null });
     });
 
-    return unsubscribe;
+    // Return combined unsubscribe
+    return () => {
+      unsubProfile();
+      unsubSessions();
+    };
   },
 }));
