@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { db } from "@/lib/firebase"
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, Timestamp } from "firebase/firestore"
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, Timestamp, writeBatch } from "firebase/firestore"
 import { useAuthStore } from "@/store/useAuthStore"
 import { Navbar } from "@/components/Navbar"
 import Footer from "@/components/Footer"
@@ -44,9 +44,11 @@ export default function AdminPaymentsPage() {
   const handleVerify = async (payment: any) => {
     setActionLoading(payment.id)
     try {
+      const batch = writeBatch(db)
+      
       // 1. Update Payment Status
       const paymentRef = doc(db, "payments", payment.id)
-      await updateDoc(paymentRef, {
+      batch.update(paymentRef, {
         status: "VERIFIED",
         verifiedAt: serverTimestamp(),
         verifiedBy: user?.email
@@ -58,7 +60,7 @@ export default function AdminPaymentsPage() {
       const endDate = new Date()
       endDate.setDate(startDate.getDate() + 30) // 30 days subscription
 
-      await updateDoc(userRef, {
+      batch.update(userRef, {
         subscription: {
           plan: payment.plan,
           status: "active",
@@ -68,6 +70,9 @@ export default function AdminPaymentsPage() {
         },
         lastUpdated: serverTimestamp()
       })
+
+      // 3. Commit the atomic batch
+      await batch.commit()
 
       alert("Payment verified and subscription activated!")
     } catch (err) {
