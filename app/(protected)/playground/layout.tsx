@@ -26,8 +26,6 @@ import {
   ExternalLink
 } from "lucide-react"
 
-import { SubscriptionGuard } from "@/components/SubscriptionGuard"
-
 /**
  * Render the playground layout: a responsive left sidebar for workspace/session management, a main content area, and animated overlays for favorites and settings.
  *
@@ -125,15 +123,15 @@ export default function PlaygroundLayout({
       setIsSaving(false)
     }
   }
+const handleCopyFavorite = (name: string) => {
+  navigator.clipboard.writeText(name)
+  setCopiedFavorite(name)
+  setTimeout(() => setCopiedFavorite(null), 2000)
+}
 
-  const handleCopyFavorite = (name: string) => {
-    navigator.clipboard.writeText(name)
-    setCopiedFavorite(name)
-    setTimeout(() => setCopiedFavorite(null), 2000)
-  }
+return (
+  <div className="flex h-screen bg-background overflow-hidden font-sans relative">
 
-  return (
-    <div className="flex h-screen bg-background overflow-hidden font-sans relative">
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
