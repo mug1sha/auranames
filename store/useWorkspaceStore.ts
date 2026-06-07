@@ -252,6 +252,24 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
             }
           });
         }
+      } else {
+        // Reset to default state if profile doesn't exist
+        set({
+          favorites: [],
+          settings: {
+            cloudSync: true,
+            usageStats: false,
+            notifications: true,
+            darkMode: true
+          },
+          subscription: {
+            plan: "none",
+            status: "inactive",
+            startDate: null,
+            endDate: null,
+            transactionId: null
+          }
+        });
       }
     }, (error) => {
       console.error("User profile listener error:", error);
