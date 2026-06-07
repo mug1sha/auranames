@@ -8,15 +8,25 @@ import { Loader2 } from "lucide-react"
 
 export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuthStore()
-  const { subscription, loading: workspaceLoading } = useWorkspaceStore()
+  const { subscription, loading: workspaceLoading, fetchSessions } = useWorkspaceStore()
   const router = useRouter()
   const pathname = usePathname()
 
   const isPublicPaymentPage = pathname === "/pricing" || pathname.startsWith("/payment")
 
+  // Trigger data fetch if user is logged in
   useEffect(() => {
-    // Wait for both auth and workspace data to load
-    if (!authLoading && !workspaceLoading) {
+    if (user) {
+      const unsubscribe = fetchSessions(user.uid)
+      return () => unsubscribe()
+    }
+  }, [user, fetchSessions])
+
+  useEffect(() => {
+    // Wait for auth to load, and if user exists, wait for workspace data to sync
+    const isDataLoaded = !authLoading && (!user || !workspaceLoading)
+
+    if (isDataLoaded) {
       if (!user) {
         // If not logged in, only redirect if trying to access protected routes
         if (!isPublicPaymentPage) {
@@ -35,7 +45,8 @@ export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   }, [user, authLoading, workspaceLoading, subscription, router, pathname, isPublicPaymentPage])
 
   // Show loading state while checking
-  if (authLoading || workspaceLoading) {
+  // Only wait for workspaceLoading if we actually have a user to fetch data for
+  if (authLoading || (user && workspaceLoading)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6 text-center">
         <div className="navbar-clay-pill p-10 max-w-md flex flex-col items-center">

@@ -68,13 +68,6 @@ export default function PlaygroundLayout({
     setSettingsState(settings)
   }, [settings])
 
-  useEffect(() => {
-    if (user) {
-      const unsubscribe = fetchSessions(user.uid)
-      return () => unsubscribe()
-    }
-  }, [user, fetchSessions])
-
   const handleSignOut = async () => {
     await signOut(auth)
     setUser(null)
