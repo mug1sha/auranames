@@ -16,8 +16,11 @@ function PaymentContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { user } = useAuthStore()
-  const planId = searchParams.get('plan') as keyof typeof PLANS
-  const plan = PLANS[planId] || PLANS.pro
+  const requestedPlan = searchParams.get('plan')
+  const resolvedPlanId: keyof typeof PLANS = (requestedPlan && requestedPlan in PLANS) 
+    ? (requestedPlan as keyof typeof PLANS) 
+    : "pro"
+  const plan = PLANS[resolvedPlanId]
   
   const [txHash, setTxHash] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -48,7 +51,7 @@ function PaymentContent() {
         userId: user.uid,
         userEmail: user.email,
         reference,
-        plan: planId,
+        plan: resolvedPlanId,
         amount: plan.price,
         currency: "USDT",
         network: "TRC20",
