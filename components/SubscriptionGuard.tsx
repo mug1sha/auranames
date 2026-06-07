@@ -12,7 +12,10 @@ export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
 
-  const isPublicPaymentPage = pathname === "/pricing" || pathname.startsWith("/payment")
+  const isPublicPaymentPage = 
+    pathname === "/pricing" || 
+    pathname.startsWith("/dashboard/billing/payment") || 
+    pathname.startsWith("/dashboard/billing/status")
 
   // Trigger data fetch if user is logged in
   useEffect(() => {
