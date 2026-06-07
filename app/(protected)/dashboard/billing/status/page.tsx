@@ -32,6 +32,8 @@ function StatusContent() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
         setPayment(snapshot.docs[0].data())
+      } else {
+        setPayment(null)
       }
       setLoading(false)
     }, (error) => {
